@@ -17,6 +17,7 @@
     "start": "node server.js",
     "dev": "npx nodemon server.js",
     "test": "ava",
+    "dbbackup": "mysqldump --single-transaction -u publicuser -p pdf2fdp_test --result-file=./database/backup.sql",
     "dbdrop-dev": "sudo mysql < database/query/drop-all.sql"
   },
   "dependencies": {
