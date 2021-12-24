@@ -1,0 +1,23 @@
+{
+  "development": { 
+    "username": "publicuser",
+    "password": "userpwd",
+    "database": "pdf2fdp_test",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "publicuser",
+    "password": "userpwd",
+    "database": "pdf2fdp_test",
+    "host": "localhost",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "publicuser",
+    "password": "userpwd",
+    "database": "pdf2fdp",
+    "host": "localhost",
+    "dialect": "mysql"
+  }
+}
