@@ -1,0 +1,5 @@
+USE pdf2fdp_test;
+DROP TABLE IF EXISTS AccessState;
+DROP TABLE IF EXISTS User;
+DROP TABLE IF EXISTS UserProfile;
+DROP TABLE IF EXISTS UserActivity;
