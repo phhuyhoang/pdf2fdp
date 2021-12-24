@@ -1,0 +1,11 @@
+{
+    "premium": true,
+    "cloudImport": true,
+    "cloudExport": true,
+    "poolLimit": -1,
+    "poolConcurrency": 5,
+    "dailyConversionLimit": -1,
+    "maximumFileSize": -1,
+    "settingAuthority": "custom",
+    "fileLifetime": 604800000
+}
