@@ -78,7 +78,7 @@ class ConvertEngine {
      * pools (each pool runs many smaller processes asynchronously). 
      * The next pool will start after the previous pool ends. Workers 
      * run asyncronously, too. Admin can adjust the pool limit from outside.
-     * @type {ProcessWorker}
+     * @type {ProcessWorker[]}
      * @protected
      */
     this._workers = [];
@@ -90,7 +90,7 @@ class ConvertEngine {
    */
   setDefaultConfigurator(config) {
     if (config instanceof ConvertConfigurator) {
-      this._config = config;
+      this._defaultConfig = config;
     }
     return this;
   }
@@ -112,7 +112,7 @@ class ConvertEngine {
    * corresponding Worker. 
    * @param {string} source - Source file
    * @param {string} dest - Destination folder
-   * @param {ConvertConfigurator} options 
+   * @param {Object} options 
    */
   addFile(source, dest, options = {}) {
     if (this._workers.length >= this._maxConcurrency) {
