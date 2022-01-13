@@ -1,0 +1,98 @@
+@import 'fonts.scss';
+@import 'mixins.scss';
+@import 'variables.scss';
+
+
+*, ::before, ::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: $default_rem;
+
+    @include extra-small-screen {
+        font-size: 12px;
+    }
+
+    @include small-screen {
+        font-size: 12px;
+    }
+
+    @include medium-screen {
+        font-size: 14px;
+    }
+}
+
+body {
+    position: relative;
+    z-index: 0;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 3rem;
+}
+
+h2 {
+    font-size: 1.4rem;
+}
+
+li, a, button {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: $zircon;
+    text-decoration: none;
+}
+
+li a {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+li {
+    list-style-type: none;
+}
+
+i {
+    display: inline-block;
+}
+
+p {
+    font-weight: 100;
+    text-align: justify;
+    text-justify: inter-word;
+    line-height: 1.5rem;
+}
+
+button {
+    cursor: pointer;
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+input {
+    padding: 5px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.wrapper {
+    padding: 0 10%;
+}
+
+.row {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+
+
+.col-md-3h {
+    flex: 0 0 calc(3.5/12 * 100%);
+    max-width: calc(3.5/12 * 100%);
+}
