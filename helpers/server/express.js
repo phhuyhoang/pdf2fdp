@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const glob = require('glob');
 
 
 /**
@@ -23,6 +24,22 @@ class ExpressHelper {
       route.name == 'index' 
         ? server.use('/', require(route.file))
         : server.use(`/${route.name}`, require(route.file))
+    }
+  }
+
+  /**
+   * @param {Express} server
+   * @param {string} root
+   * @param {string[]} folders
+   */
+  static autoloadViews(server, root, folders) {
+    for (const folder of folders) {
+      const handlebarFiles = glob.sync(`${root}/${folder}/**/*.hbs`);
+      for (const handlebarFile of handlebarFiles) {
+        const partialName = path.parse(handlebarFile).name;
+        // console.log(1)
+        server.locals.hbs.registerPartial(partialName, fs.readFileSync(handlebarFile, 'utf-8'));
+      }
     }
   }
 }
