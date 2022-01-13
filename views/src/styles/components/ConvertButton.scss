@@ -1,0 +1,63 @@
+@import '../base/keyframes.scss';
+
+
+.convert-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+
+  button.styled-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:hover .cog-group {
+      @include cog-rolling;
+    }
+
+    &:disabled .cog-group {
+      @include cog-rolling;
+    }
+
+    &.style-1 {
+
+      .cog-group {
+        position: relative;
+        vertical-align: center;
+        width: calc(2.1rem + 2px);
+        height: calc(0.7rem * 2 + 2px);
+
+        i {
+          position: absolute;
+          z-index: 1;
+        }
+
+        i:nth-of-type(1) {
+          left: 0;
+          top: 0.25rem;
+          font-size: 1.1rem;
+        }
+
+        i:nth-of-type(2) {
+          right: 0;
+          top: 0;
+          font-size: 0.7rem;
+        }
+
+        i:nth-of-type(3) {
+          right: 0;
+          bottom: 0;
+          font-size: 0.7rem;
+        }
+      }
+
+      span {
+        align-self: flex-end;
+        font-size: 1.2rem;
+      }
+
+    }
+  }
+
+}
