@@ -9,6 +9,7 @@
 
 html {
     font-size: $default_rem;
+    scroll-behavior: smooth;
 
     @include extra-small-screen {
         font-size: 12px;
@@ -28,6 +29,7 @@ body {
     z-index: 0;
     margin: 0;
     padding: 0;
+    background-color: $white;
 }
 
 h1 {
@@ -95,4 +97,14 @@ input {
 .col-md-3h {
     flex: 0 0 calc(3.5/12 * 100%);
     max-width: calc(3.5/12 * 100%);
+}
+
+.col-md-4h {
+    flex: 0 0 calc(4.5/12 * 100%);
+    max-width: calc(4.5/12 * 100%);
+}
+
+.col-md-5h {
+    flex: 0 0 calc(5.5/12 * 100%);
+    max-width: calc(5.5/12 * 100%);
 }

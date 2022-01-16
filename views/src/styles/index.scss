@@ -16,3 +16,13 @@
 @import './components/ProgressBar.scss';
 
 @import './effects/ripple.scss';
+
+
+header {
+
+  > * {
+    animation: fade_in_down 1s linear;
+    animation-iteration-count: 1;
+  }
+  
+}
