@@ -8,7 +8,9 @@ const bodyParser = require('body-parser');
 const config = require('./config');
 const env = config.env;
 const ExpressHelper = require('./helpers/server/express');
-const HandlebarsHelper = require('./helpers/util/HandlebarsHelper');
+const HandlebarHelpers = require('handlebars-helpers')({
+  handlebars: hbs
+})
 
 const port = process.env.PORT || 8080;
 const server = express();
@@ -27,8 +29,6 @@ server.set('view engine', 'hbs');
 ExpressHelper.autoloadViews(server, env.parsed.ENTRY_VIEWS, [ 'partials' ])
 // Routes
 ExpressHelper.autoloadRoutes(server, config.env.parsed.ENTRY_ROUTES);
-// Helpers
-HandlebarsHelper.loadAllHelpers(hbs);
 // Middlewares
 server.use(bodyParser.urlencoded({ extended: true }));
 
