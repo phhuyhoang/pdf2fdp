@@ -29,6 +29,13 @@ header {
       transform-style: preserve-3d;
       transition: all 0.35s linear;
 
+      a {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
       .brand__front-face, 
       .brand__back-face {
         display: flex;
