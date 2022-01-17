@@ -65,6 +65,15 @@ class User extends Sequelize.Model {
       },
 
       /**
+       * Determine whether user has verified via email or not
+       */
+      isVerified: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+
+      /**
        * The last day the user edited their profile. 
        * Default is the successful registration date.
        */
