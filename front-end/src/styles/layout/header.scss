@@ -1,0 +1,202 @@
+@import '../base/fonts.scss';
+@import '../base/mixins.scss';
+@import '../base/functions.scss';
+@import '../base/variables.scss';
+
+
+header {
+  display: flex;
+  position: fixed;
+  z-index: 999;
+  width: 100%;
+  justify-content: flex-end;
+  align-items: center;
+  background-color: $red;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3);
+  
+  .brand {
+    display: inherit;
+    position: relative;
+    z-index: 1;
+    align-items: center;
+    margin-right: auto;
+    cursor: pointer;
+    perspective: 1000px;
+    background-color: transparent;
+    
+    &-inner {
+      position: relative;
+      transform-style: preserve-3d;
+      transition: all 0.35s linear;
+
+      a {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
+      .brand__front-face, 
+      .brand__back-face {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backface-visibility: hidden;
+      }
+
+      .brand__front-face {
+        position: absolute;
+        height: 100%;
+        top: 0;
+        left: 0;
+      }
+
+      .brand__back-face {
+        margin-right: 1rem;
+        transform: rotateY(180deg);
+      }
+    }
+
+    &:hover .brand-inner {
+      transform: rotateY(180deg);
+    }
+    
+    &__logo {
+      margin: 0px 10px;
+    }
+    
+    &__name {
+      font-family: "Staatliches", san-serif;
+      font-size: 1rem;
+      color: $zircon;
+    }
+  }
+  
+  ul.nav {
+    display: inherit;
+    
+    li.nav__link {
+      display: inline-block;
+      padding: 0.25rem 2rem 0 2rem;
+      
+      a {
+        display: table-row;
+        transition: all 0.3s ease 0s;
+        
+        &:hover {
+          color: $darkred;
+          text-shadow: inverse_glow($lightgray)
+        }
+      }
+    }
+  }
+
+  input {
+    display: none;
+    font-size: 2.5rem;
+
+    &:checked ~ .mobile-nav__overlay {
+      display: block;
+    }
+
+    &:checked ~ .mobile-nav__menu {
+      display: block;
+      width: 300px;
+    }
+
+    &:checked ~ .mobile-nav__menu .button-close i {
+      opacity: 1;
+    }
+  }
+
+  .mobile-nav {
+    &__overlay {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      height: 100%;
+      width: 100%;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    &__menu {
+      position: fixed;
+      z-index: 1000;
+      height: 100%;
+      width: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      overflow-x: hidden;
+      background-color: $red;
+      transition: width 0.2s ease-out;
+
+      .button-close {
+        background-color: $darkred;
+        height: 150px;
+        color: $white;
+        cursor: pointer;
+
+        i {
+          opacity: 0;
+          position: absolute;
+          font-size: 2.5rem;
+          top: 0.4rem;
+          right: 0.75rem;
+          transition: opacity 0.4s linear, transform 0.6s ease-in-out;
+
+          &:hover {
+            transform: rotate(180deg);
+          }
+        }
+      }
+
+      .mobile-nav {
+        &__list {
+          margin: 0;
+          padding: 0;
+        }
+
+        &__link {
+          display: block;
+          font-weight: bold;
+          text-align: center;
+          text-transform: uppercase;
+          line-height: 3rem;
+          background-color: $red;
+          box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3);
+
+          &:hover {
+            background-color: $darkred;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.4) inset;
+          }
+
+          a {
+            font-family: 'Staatliches';
+            font-size: 1.5rem;
+          }
+        }
+      }
+    }
+
+    &__btn {
+      border: 4px solid $zircon;
+      border-radius: 4px;
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1.5rem;
+      justify-content: center;
+      align-items: center;
+      color: $zircon;
+      cursor: pointer;
+      transition: transform 0.6s ease-in-out;
+
+      &:hover {
+        transform: rotateZ(360deg);
+      }
+    }
+  }
+}
