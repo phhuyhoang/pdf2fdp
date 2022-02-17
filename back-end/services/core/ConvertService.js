@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const ConvertModule = require('../../modules/DocumentConverter');
+const ConvertModule = require('../../core/DocumentConverter/');
 
 const ConvertEngine = new ConvertModule.ConvertEngine;
 const ConvertConfigurator = ConvertModule.ConvertConfigurator;

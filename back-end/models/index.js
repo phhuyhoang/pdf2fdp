@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const config = require('../config');
+const config = require('../configs/');
 const env = config.env.parsed;
 
 const sharable = Object.create(null)

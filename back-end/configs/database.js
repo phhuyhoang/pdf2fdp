@@ -2,7 +2,7 @@
  |----------------------------------------------------------------------
  | DATABASE CONNECTOR
  |----------------------------------------------------------------------
- | To facilitate parallel development and operation, I recommend you 
+ | To facilitate parallel development and operation, I recommend that you 
  | should use two separate databases. 
  */
 

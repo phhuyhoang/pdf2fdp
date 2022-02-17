@@ -1,9 +1,8 @@
 const Sequelize = require('sequelize');
-const config = require('../config')
+const config = require('../configs')
 const defaultDatabase = config.db;
-const env = config.env;
 
-const LangUtil = require(`${env.parsed.ENTRY_HELPERS}/util/LangIdentifier`);
+const LangUtil = require('../helpers/util/LangIdentifier');
 
 
 class UserProfile extends Sequelize.Model {

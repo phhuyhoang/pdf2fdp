@@ -3,16 +3,15 @@ const path = require('path');
 const _ = require('lodash');
 const ava = require('ava');
 const init = require('./init');
-const env = require('../config').env.parsed;
 
 init.useDefaultHooks();
 
-const testspace = `${env.ENTRY_MODULES}/ScheduleManager`;
+const TestingFolder = '../services/schedules/'
 
 
 const local = {
   scheduler: {
-    FileExpiration: require(`${testspace}/FileExpiration`),
+    FileExpiration: require(`${TestingFolder}/FileExpiration`),
   },
   prepared: {
     directory: path.resolve(__dirname, 'sample/schedule_test'),

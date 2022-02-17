@@ -21,15 +21,16 @@ const filecache = new FileCache();
 const paths = {
     server: path.resolve('server.js'),
     source: {
-        root: path.resolve('./views/'),
-        scripts: path.resolve('./views/src/scripts'),
-        styles: path.resolve('./views/src/styles'),
+        root: path.resolve('./back-end/views/'),
+        scripts: path.resolve('./front-end/src/scripts'),
+        styles: path.resolve('./front-end/src/styles'),
     },
     dest: {
-        scripts: path.resolve('./public/scripts'),
-        styles: path.resolve('./public/styles'),
-    }
+        scripts: path.resolve('./front-end/public/scripts'),
+        styles: path.resolve('./front-end/public/styles'),
+    },
 };
+
 
 const help = {
     createHash: function createHash(data, algo, len) {
@@ -94,6 +95,7 @@ gulp.task('uglify-js', function () {
             const basename = $path.basename;
             const extname = $path.extname;
             const hashname = help.createHash($path.basename, 'shake256', 10);
+
             $path.basename = hashname;
             console.log(`Hashed ${basename}${extname} to ${hashname}${extname}`);
         }))
