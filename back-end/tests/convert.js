@@ -6,26 +6,25 @@ const pdflib = require('pdf-lib');
 const child_process = require('child_process');
 const detectSVG = require('detect-svg');
 const init = require('./init');
-const env = require('../config').env.parsed;
 
 init.useDefaultHooks();
 
-const testspace = `${env.ENTRY_MODULES}/DocumentConverter`;
+const TestingFolder = '../core/DocumentConverter/'
 
 
 const local = {
   builder: {
-    PDFConv: require(`${testspace}/builder/converters/PDFConverterBuilder`),
-    PDF2PPM: require(`${testspace}/builder/converters/PDF2PPM_Builder`),
-    PDF2SVG: require(`${testspace}/builder/converters/PDF2SVG_Builder`),
-    PDFTK: require(`${testspace}/builder/splitters/PDFTK_Builder`),
+    PDFConv: require(`${TestingFolder}/builder/converters/PDFConverterBuilder`),
+    PDF2PPM: require(`${TestingFolder}/builder/converters/PDF2PPM_Builder`),
+    PDF2SVG: require(`${TestingFolder}/builder/converters/PDF2SVG_Builder`),
+    PDFTK: require(`${TestingFolder}/builder/splitters/PDFTK_Builder`),
   },
   convert: {
-    ConvertEngine: require(`${testspace}/ConvertEngine`),
-    ConvertConfigurator: require(`${testspace}/ConvertConfigurator`),
+    ConvertEngine: require(`${TestingFolder}/ConvertEngine`),
+    ConvertConfigurator: require(`${TestingFolder}/ConvertConfigurator`),
   },
   util: {
-    PDFInfo: require(`${testspace}/util/info`),
+    PDFInfo: require(`${TestingFolder}/util/info`),
   },
   prepared: {
     node4prof: {

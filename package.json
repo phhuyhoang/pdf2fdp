@@ -70,7 +70,7 @@
     "sequelize-cli": "^6.3.0"
   },
   "ava": {
-    "snapshotDir": "test/snapshots/",
+    "snapshotDir": "back-end/tests/snapshots/",
     "concurrency": 1,
     "failFast": true,
     "failWithoutAssertions": false,

@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const util = require('util');
 const mime = require('mime');
 const child_process = require('child_process');
 const express = require('express');
@@ -8,15 +7,16 @@ const multer = require('multer');
 const story = require('storyboard');
 const lodash = require('lodash');
 const crypto = require('crypto');
-const env = require('../config').env.parsed;
+
+const env = require('../configs/').env.parsed;
 const router = express.Router();
 
 const _ = lodash;
 const storyboard = story.mainStory;
 
-const ConvertController = require('../controllers/convert/ConvertController').getInstance();
-const FileExpirationScheduler = require('../modules/ScheduleManager/FileExpiration');
-const PDFInfo = require('../modules/DocumentConverter').PDFInfo;
+const ConvertController = require('../services/core/ConvertService').getInstance();
+const FileExpirationScheduler = require('../services/schedules/FileExpiration/');
+const PDFInfo = require('../core/DocumentConverter').PDFInfo;
 
 const acceptExtensions = [ 'png', 'svg', 'jpeg', 'tiff' ];
 
@@ -108,8 +108,8 @@ router.get('/', (req, res, next) => res.render('index'));
 // Convert endpoint. Deployed on the homepage only. 
 router.post('/convert', function handleSingleFileUpload(req, res, next) {
   const date = Date.now();
-  const upload = `${env.ENTRY_ROOT}/public/upload`
-  const download = `${env.ENTRY_ROOT}/public/download`
+  const upload = '../../front-end/public/upload'
+  const download = '../../front-end/public/download/'
 
   const storage = createLimitedStorage(function setStorageFolder(file) {
     const hash = crypto.createHash('sha1')

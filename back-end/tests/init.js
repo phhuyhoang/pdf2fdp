@@ -1,14 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const ava = require('ava')
-const config = require('../config');
+const config = require('../configs');
 const models = require('../models');
 
 
 // initializtion: shared context
 async function onStart(test) {
   /**
-   * Shared stuff from init, contains libraries and preconfig.
+   * Shared stuff from init, contains libraries and preconfigs.
    * Always run first.
    */
   const shared = Object.create(null);

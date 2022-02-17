@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize');
-const defaultDatabase = require('../config').db;
+const defaultDatabase = require('../configs').db;
 
 
 class User extends Sequelize.Model {
