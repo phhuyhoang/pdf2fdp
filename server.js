@@ -6,34 +6,40 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const config = require('./back-end/configs/');
-const env = config.env;
-const HandlebarHelpers = require('handlebars-helpers')({
-  handlebars: hbs
-})
+const ExpressHelpers = require('./back-end/helpers/Express.helper');
+const HandlebarHelpers = require('handlebars-helpers')({ handlebars: hbs });
 
-const ExpressHelper = require('./back-end/helpers/server/express');
 
 const port = process.env.PORT || 8080;
 const server = express();
+
 
 // --------------------------------------------------------------------
 //  Configuration
 // --------------------------------------------------------------------
 server.locals.hbs = hbs
 
-// Public
+
+// --------------------------- Public ---------------------------
 server.use(express.static('./front-end/public'));
-// Views
+
+
+// --------------------------- Views ---------------------------
+
 server.engine('hbs', hbs.__express);
-server.set('views', env.parsed.ENTRY_VIEWS);
+server.set('views', config.env.parsed.ENTRY_VIEWS);
 server.set('view engine', 'hbs');
+ExpressHelpers.autoloadViews(server, config.env.parsed.ENTRY_VIEWS, [ 'partials' ])
 
 
-ExpressHelper.autoloadViews(server, env.parsed.ENTRY_VIEWS, [ 'partials' ])
-// Routes
-ExpressHelper.autoloadRoutes(server, config.env.parsed.ENTRY_ROUTES);
-// Middlewares
+// --------------------------- Middlewares ---------------------------
 server.use(bodyParser.urlencoded({ extended: true }));
+ExpressHelpers.autoloadMiddlewares(server, config.env.parsed.ENTRY_MIDDLEWARES);
+
+
+// --------------------------- Routes ---------------------------
+ExpressHelpers.autoloadRoutes(server, config.env.parsed.ENTRY_ROUTES);
+
 
 
 const listener = server.listen(port, function onStartListen() {
