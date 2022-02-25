@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const config = require('../configs')
 const defaultDatabase = config.db;
 
-const LangUtil = require('../helpers/util/LangIdentifier');
+const LangIdentifierUtil = require('../helpers/LangIdentifier.helper');
 
 
 class UserProfile extends Sequelize.Model {
@@ -35,7 +35,7 @@ class UserProfile extends Sequelize.Model {
         validate: {
           max: { args: 30, msg: "Length must be <= 30" },
           notEmpty: { msg: "This field must not be empty" },
-          humanReadable: string => LangUtil.isHumanLanguage(string),
+          humanReadable: string => LangIdentifierUtil.isHumanLanguage(string),
         }
       },
 
@@ -49,7 +49,7 @@ class UserProfile extends Sequelize.Model {
         validate: {
           max: { args: 30, msg: "Length must be <= 30" },
           notEmpty: { msg: "This field must not be empty" },
-          humanReadable: string => LangUtil.isHumanLanguage(string),
+          humanReadable: string => LangIdentifierUtil.isHumanLanguage(string),
         }
       },
 

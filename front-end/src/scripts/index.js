@@ -280,14 +280,14 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
             throw err;
           }
 
-          current_progress_bar.nextPhase(); // Switch to finish
-          current_progress_bar.setDownloadUrl(json.link);
+          current_progress_bar.nextPhase(); // Switch to the last
+          current_progress_bar.setDownloadUrl(json.downloadLink);
           request_passed++;
 
           current_progress_bar
             .$body
             .$download_button
-            .setAttribute('title', `${json.name} (${util.humanFileSize(json.filesize)})`);
+            .setAttribute('title', `${json.fileName} (${util.humanFileSize(json.fileSize)})`);
 
           if (request_passed >= request_sent.length) {
             convert_button.end();
