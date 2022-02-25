@@ -20,6 +20,7 @@ const internal_env = {
   ENTRY_HELPERS: path.resolve(__dirname, '..', 'helpers'),
   ENTRY_ROUTES: path.resolve(__dirname, '..', 'routes'),
   ENTRY_VIEWS: path.resolve(__dirname, '..', 'views'),
+  ENTRY_MIDDLEWARES: path.resolve(__dirname, '..', 'middlewares'),
 };
 
 const project_env = internal_env.ENTRY_ROOT + '/.env';
