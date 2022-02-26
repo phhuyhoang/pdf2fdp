@@ -14,7 +14,6 @@ class ConvertSessionBuilder {
     this.configurator = ConvertConfigurator.getDefault();
     this.maxConcurrency = 1;
     this.builtSession = null;
-    this.callbackOnFinal = fulfilled => fulfilled;
   }
 
 
@@ -57,18 +56,6 @@ class ConvertSessionBuilder {
 
 
   /**
-   * Add a callback to run once this session ends
-   * @param {Function} callback
-   */
-  finally(callback) {
-    if (typeof callback == 'function') {
-      this.callbackOnFinal = callback
-    }
-    return this;
-  }
-
-
-  /**
    * Build an invokable function that can start a convert session later
    * @return {Function}
    */
@@ -78,11 +65,12 @@ class ConvertSessionBuilder {
     /**
      * @return {Promise}
      */
-    const session = function ConvertSession() {
+    const session = async function ConvertSession() {
       // Returns the previous spawned instance, preventing excessively spawn
       if (self.builtSession instanceof Promise) return self.builtSession;
 
-      const convertAsync = ConvertEngine.setMaxConcurrency(self.maxConcurrency)
+      const convertAsync = ConvertEngine
+        .setMaxConcurrency(self.maxConcurrency)
         .addFile(self.inputFilePath, self.outputFolderPath, {
           configurator: self.configurator,
           inputExtension: self.inputFileExtension,
@@ -90,7 +78,6 @@ class ConvertSessionBuilder {
           hooks: self.hooks,
         })
         .convert()
-        .then(self.callbackOnFinal);
 
       self.builtSession = convertAsync;
       return convertAsync;

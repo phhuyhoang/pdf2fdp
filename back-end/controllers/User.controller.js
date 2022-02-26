@@ -10,7 +10,7 @@ const syslib = require('../helpers/SysLib.helper');
 const LimitedStorage = require('../services/storage/LimitedStorage.service');
 const ConversionService = require('../services/core/ConversionService.service');
 const CompressionService = require('../services/core/CompressionService.service');
-const ScheduleServiceProvider = require('../services/schedules/ScheduleServiceProvider.service');
+const ScheduleService = require('../services/schedules/ScheduleServiceProvider.service');
 const PDFInfo = require('../core/DocumentConverter').PDFInfo;
 
 
@@ -20,9 +20,7 @@ class UserController {
     const storage = new LimitedStorage();
 
     storage.any('pdf').call(null, request, response, async function requestUploadHandler(error) {
-      error instanceof multer.MulterError 
-        ? console.log('An error occurred from Multer during current upload session')
-        : console.log('An uncaught error occurred during current upload session');
+      error instanceof multer.MulterError && console.log('An error occurred from Multer during current upload session');
 
       const file = _.clone(request.files).pop();
       const hashcode = path.basename(file.destination);
@@ -72,7 +70,7 @@ class UserController {
       const relativeDownloadLink = '/' + path.relative(c_static.PUBLIC_FOLDER, zipFilePath)
       const actualFileSize = fs.existsSync(zipFilePath) ? fs.statSync(zipFilePath).size : 0;
       
-      ScheduleServiceProvider
+      ScheduleService
         .deleteFileAtSpecificTime(dest)
         .after(c_common.period.ONE_DAY)
         .enforce();
@@ -85,6 +83,7 @@ class UserController {
 
       // Delete user's uploaded file after all, just keep zipped output file.
       syslib.fs.safeRecursiveRemove(file.destination);
+      return true;
     });
 
   }  

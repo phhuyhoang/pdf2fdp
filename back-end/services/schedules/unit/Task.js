@@ -15,7 +15,6 @@ class Task {
     privateScope.datetime = datetools.addDays(new Date, 1);
     privateScope.invokeCount = 0;
     privateScope.invokable = function invokableWithSharedScope() { 
-      console.log(callback, callback.toString())
       callback(privateScope) 
     };
     privateScope.destroy = function destroyTask() {
