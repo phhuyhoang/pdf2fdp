@@ -26,12 +26,6 @@ class ConversionService {
       privateScope = secret.get(self);
 
       /**
-       * Current session
-       * @type {Function}
-       */
-      privateScope.currentSession = null;
-
-      /**
        * Current convert process
        * @type {Promise}
        */
@@ -53,52 +47,60 @@ class ConversionService {
 
   /**
    * Push convert request into the queue.
-   * @param {Object[]} declaration
+   * @param {Object} declaration
    *     @param {string} declaration.inputFilePath - Input file path
    *     @param {string} declaration.inputFileExtension - Input file extension
    *     @param {string} declaration.outputFolderPath - Output folder path
    *     @param {string} declaration.outputFileExtension - Output file extension
    *     @param {Object} declaration.configurator - Convert config
    *     @param {Object} declaration.hooks - Engine hooks (experiment)
+   *     @param {Function} declaration.onFinishCallback
    */
-  convertAsync(declaration) {
+  convertAsync(declaration = {}) {
     const self = ConversionService;
     const privateScope = secret.get(self);
     const hooks = declaration.hooks || Object.create(null);
 
-    const builder = new ConvertSessionBuilder()
+    const currentSession = new ConvertSessionBuilder()
       .setMaxConcurrency(1)
       .setInput(declaration.inputFilePath, declaration.inputFileExtension)
       .setOutput(declaration.outputFolderPath, declaration.outputFileExtension)
       .applyConfig(declaration.configurator)
       .addHook(_.objectEntriesToFlattedArray(hooks));
 
-    const proceedOnceSessionDone = async function proceedOnceSessionDone(fulfilled) {
-      if (privateScope.queue.length) {
-        const nextSession = privateScope.queue.shift();
-        privateScope.currentSession = nextSession;
-        privateScope.currentProcess = nextSession.call().then(proceedOnceSessionDone);
-      }
-      else {
-        privateScope.currentSession = privateScope.currentProcess = null;
-      }
-      return fulfilled;
-    }
 
     return new Promise(function holdupUntilSessionDone(resolve, reject) {
-      const session = builder.finally(fulfilled => resolve(fulfilled)).build();
 
-      // Push current session into queue if there is another convert 
-      // process running
-      if (privateScope.current instanceof Promise) {
-        privateScope.queue.push(session);
+      const promiseHandleCurrentConvertRequest = async function promiseHandleCurrentConvertRequest() {
+        privateScope.currentProcess = 
+          currentSession.build()
+            .call()
+            .then(resolve)
+            .then(declaration.onFinishCallback);
+
+        const currentResult = await privateScope.currentProcess;
+
+        if (privateScope.queue.length) {
+          const promiseHandleNextConvertRequest = privateScope.queue.shift();
+          return await promiseHandleNextConvertRequest.call();
+        }
+        else {
+          privateScope.currentProcess = null;
+          return currentResult;
+        }
       }
-      // And vise versa, run and set it as current
+
+      // Push current session into the queue if an another convert process is running
+      // (from second request onwards, if previous request wasn't completed)
+      if (privateScope.currentProcess instanceof Promise) {
+        const promiseCallback = promiseHandleCurrentConvertRequest;
+        privateScope.queue.push(promiseCallback)
+      }
+      // And vise versa, run it immediately (first request in queue)
       else {
-        const currentProcess = session.call().then(proceedOnceSessionDone);
-        privateScope.currentSession = session;
-        privateScope.currentProcess = currentProcess;
+        promiseHandleCurrentConvertRequest();
       }
+      
     });
   }
 }
