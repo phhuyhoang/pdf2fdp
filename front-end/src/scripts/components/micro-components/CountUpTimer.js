@@ -47,6 +47,7 @@ function CountUpTimer() {
 
   CountUpDivElement.stopTimer = function stopTimer() {
     clearInterval(interval);
+    interval = null;
   }
 
   CountUpDivElement.$text = CountUpTextNode;
