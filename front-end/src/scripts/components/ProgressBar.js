@@ -33,8 +33,8 @@ function ProgressBar(filename, code = 0) {
   // Micro components
   const prefix_text = document.createElement('span');
   const indicator = new ProgressIndicator();
-  const transfer_tracker = new TransferTracker();
   const countup_timer = new CountUpTimer();
+  const transfer_tracker = new TransferTracker();
   const dropdown_select = new DropdownSelect();
   const option_button = new StyledButton('option-button', 'fa-wrench', '')
     .setClass('option-button')
@@ -62,6 +62,12 @@ function ProgressBar(filename, code = 0) {
 
   TailDivElement.$remove_button = document.createElement('i').setClass('fa fa-times').setParent(TailDivElement);
 
+  const resetCountupTimer = function resetCountupTimer() {
+    countup_timer.resetTimer();
+    countup_timer.stopTimer();
+    return countup_timer;
+  }
+
   const updateState = function updateState() {
     BodyDivElement.removeAllChilds();
 
@@ -84,14 +90,16 @@ function ProgressBar(filename, code = 0) {
         createSpanTextFromContent('CONVERTING').setParent(BodyDivElement);
         indicator.setColor('blue');
         indicator.switchToUnpredicted();
-        countup_timer.resetTimer();
-        countup_timer.startTimer();
+        resetCountupTimer();
         HeadDivElement.refresh();
         HeadDivElement.append(rolling_cog_icon);
         BodyDivElement.append(indicator);
         BodyDivElement.append(countup_timer);
+
+        countup_timer.startTimer();
         return this;
       case 'done':
+        resetCountupTimer();
         HeadDivElement.refresh();
         HeadDivElement.append(mark_done_icon);
         BodyDivElement.append(download_button);
@@ -156,6 +164,8 @@ function ProgressBar(filename, code = 0) {
     const error_alert = createSpanTextFromContent(`${_error} ${_code}`)
       .setClass('error-alert');
     error_alert.setAttribute('title', _message);
+
+    resetCountupTimer();
     BodyDivElement.removeAllChilds().append(error_alert);
     HeadDivElement.refresh();
     HeadDivElement.append(error_icon);
