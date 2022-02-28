@@ -35,3 +35,12 @@ module.exports.path.resolveThenCreateFolder = function resolveThenCreateFolder(.
 
   return absoluted_path;
 }
+
+
+module.exports.path.resolveThenWriteFile = function resolveThenWriteFile(...segments) {
+  const data = segments.pop();
+  const file = this.resolve(...segments);
+
+  fs.writeFileSync(file, data);
+  return file;
+}
