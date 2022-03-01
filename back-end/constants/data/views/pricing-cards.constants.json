@@ -1,0 +1,70 @@
+[
+    {
+        "name": "Free",
+        "description": "Free benefits for guests, anyone who visits this website can enjoy this benefits without logging in.",
+        "price": {
+            "value": 0,
+            "currency": "USD"
+        },
+        "benefits": {
+            "input_types": "PDF",
+            "output_types": "Standard",
+            "maximum_size": "50MB",
+            "daily_conv_limit": "5 files",
+            "file_lifetime": "1 day",
+            "configuration": "Default"
+        },
+        "annotate": {
+            "output_types": "PNG, SVG"
+        },
+        "button": {
+            "text": "Default"
+        }
+    },
+    {
+        "name": "Basic",
+        "description": "For users who already have an account.",
+        "price": {
+            "value": 0,
+            "currency": "USD"
+        },
+        "benefits": {
+            "input_types": "PDF",
+            "output_types": "Standard",
+            "maximum_size": "50MB",
+            "daily_conv_limit": "10 files",
+            "file_lifetime": "1 day",
+            "configuration": "Default"
+        },
+        "annotate": {
+            "output_types": "PNG, SVG"
+        },
+        "button": {
+            "text": "Sign up",
+            "url": "/register"
+        }
+    },
+    {
+        "name": "Premium",
+        "description": "Tips: Buy Yearly subscription package for 10% discount.",
+        "price": {
+            "value": 4.99,
+            "currency": "USD"
+        },
+        "benefits": {
+            "input_types": "PDF",
+            "output_types": "Extended",
+            "maximum_size": "Unlimited",
+            "daily_conv_limit": "Unlimited",
+            "file_lifetime": "7 days",
+            "configuration": "Customizable"
+        },
+        "annotate": {
+            "output_types": "PNG, SVG, JPEG, TIFF"
+        },
+        "button": {
+            "text": "Buy now",
+            "url": "#"
+        }
+    }
+]

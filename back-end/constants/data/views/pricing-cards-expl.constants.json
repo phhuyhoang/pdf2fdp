@@ -1,0 +1,26 @@
+[
+    {
+        "key": "input_types",
+        "content": "The file format that our server accepts. For the time being, only include PDF format. We will support other document and archive formats in the future."
+    },
+    {
+        "key": "output_types",
+        "content": "The file format we support converting to.\nStandard: PNG, SVG\nExtended: PNG, SVG, JPEG, TIFF"
+    },
+    {
+        "key": "maximum_size",
+        "content": "The size, in bytes, for a single upload. This rule will be adjusted separately between compressed file size and unpacked file size in future."
+    },
+    {
+        "key": "daily_conv_limit",
+        "content": "Number of files allowed to convert per day, daily reset at 0:00."
+    },
+    {
+        "key": "file_lifetime",
+        "content": "The lifespan of the output file continues to be stored on our system, starting from the moment you successfully perform the conversion."
+    },
+    {
+        "key": "configuration",
+        "content": "User-desired adjustments to the output file. E.g: DPI, page sizes, etc."
+    }
+]

@@ -1,0 +1,8 @@
+{
+    "input_types": "Input File Types",
+    "output_types": "Output File Types",
+    "maximum_size": "Maximum File Size",
+    "daily_conv_limit": "Daily Conversion Limit",
+    "file_lifetime": "File Lifetime",
+    "configuration": "Configuration"
+}
