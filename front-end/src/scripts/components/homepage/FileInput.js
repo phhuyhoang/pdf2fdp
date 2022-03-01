@@ -1,12 +1,9 @@
-const util = require('../util/helper');
-
-
 /**
- * Create an invincile input[type="file"]
+ * Create a hidden file input
  * @class
  */
 function FileInput(name) {
-  const Input = util.constructElement('input')
+  return document.createElement('input')
     .setHTMLAttributes({
       name,
       type: 'file'
@@ -14,8 +11,6 @@ function FileInput(name) {
     .setCSSStyle({
       display: 'none'
     });
-
-  return Input;
 }
 
 
