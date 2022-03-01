@@ -1,13 +1,14 @@
-require('./util/prototype').init();
+const autoload = require('./helpers/autoload/prototype').init();
+const ajax = require('./helpers/util/ajax.util');
+const size = require('./helpers/util/size.util');
 
-const util = require('./util/helper');
-const effects = require('./lib/effects');
+const effects = require('./misc/effects');
 
-const FileInput = require('./components/FileInput');
-const EmptyProgressBar = require('./components/EmptyProgressBar');
-const ProgressBar = require('./components/ProgressBar');
-const StyledButton = require('./components/micro-components/StyledButton');
-const ConvertButton = require('./components/micro-components/ConvertButton');
+const FileInput = require('./components/homepage/FileInput');
+const EmptyProgressBar = require('./components/homepage/EmptyProgressBar');
+const ProgressBar = require('./components/homepage/ProgressBar');
+const StyledButton = require('./components/homepage/micro-components/StyledButton');
+const ConvertButton = require('./components/homepage/micro-components/ConvertButton');
 
 /**
  * Global variables
@@ -246,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
       form.set('options', JSON.stringify(form_data));
       form.set('outputExtension', current_progress_bar.$body.$dropdown_select.value.toString());
 
-      const xhr = util.createRequest('post', 'convert', form);
+      const xhr = ajax.createRequest('post', 'convert', form);
 
       xhr.XHR.upload.onprogress = function reportUploadProgress(event) {
         if (event.lengthComputable) {
@@ -287,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
           current_progress_bar
             .$body
             .$download_button
-            .setAttribute('title', `${json.fileName} (${util.humanFileSize(json.fileSize)})`);
+            .setAttribute('title', `${json.fileName} (${size.humanFileSize(json.fileSize)})`);
 
           if (request_passed >= request_sent.length) {
             convert_button.end();

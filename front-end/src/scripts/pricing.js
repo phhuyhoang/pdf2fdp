@@ -1,9 +1,8 @@
-require('./util/prototype').init();
+const autoload = require('./helpers/autoload/prototype').init();
 
+const effect = require('./misc/effects');
 
-const effect = require('./lib/effects');
-
-const ToggleSwitch = require('./components/micro-components/ToggleSwitch');
+const ToggleSwitch = require('./components/pricing/ToggleSwitch');
 
 
 const toYearlyPrice = function toYearlyPrice(monthly_price) {
