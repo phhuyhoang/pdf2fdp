@@ -1,0 +1,8 @@
+{
+    "input_types": "fa-file-upload",
+    "output_types": "fa-file-download",
+    "maximum_size": "fa-archive",
+    "daily_conv_limit": "fa-clock",
+    "file_lifetime": "fa-file-medical-alt",
+    "configuration": "fa-sliders-h"
+}
