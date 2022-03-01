@@ -1,4 +1,4 @@
-const util = require('../../util/helper');
+const sizelib = require('../../../helpers/util/size.util');
 
 
 /**
@@ -13,8 +13,8 @@ function TransferTracker(total = 0) {
   const tracker = {
     currentAsByte: 0,
     totalAsByte: total,
-    current: util.humanFileSize(0),
-    total: util.humanFileSize(total),
+    current: sizelib.humanFileSize(0),
+    total: sizelib.humanFileSize(total),
   }
 
   DivElement.renderContent = function renderContent() {
@@ -27,7 +27,7 @@ function TransferTracker(total = 0) {
   DivElement.setCurrentAsByte = function setCurrentAsByte(byte) {
     if (Number.isInteger(byte)) {
       tracker.currentAsByte = byte;
-      tracker.current = util.humanFileSize(byte);
+      tracker.current = sizelib.humanFileSize(byte);
       this.renderContent();
     }
     return this;
@@ -36,7 +36,7 @@ function TransferTracker(total = 0) {
   DivElement.setTotalAsByte = function setTotalAsByte(byte) {
     if (Number.isInteger(byte)) {
       tracker.totalAsByte = byte;
-      tracker.total = util.humanFileSize(byte);
+      tracker.total = sizelib.humanFileSize(byte);
       this.renderContent();
     }
     return this;
