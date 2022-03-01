@@ -17,56 +17,74 @@
         </div>
     </div>
     <div class="plan-section wrapper row">
-        {{#each pricing}}
-        <div class="plan-card col-md-3h">
-            <div class="plan-card__title" {{#if this.description}}
-                title="{{this.description}}"
-            {{/if}}>{{uppercase @key}}</div>
-            <div class="plan-card__pricing">
-                <span class="price-amount" --data-base-price="{{this.price}}">{{this.price}} USD</span>
-                <span class="fixed-period" --data-base-period="month">/ month</span>
+
+        {{#each @root.card}}
+        
+            <div class="plan-card col-md-3h">
+                <div class="plan-card__title" title="{{this.description}}">{{uppercase this.name}}</div>
+                
+                <div class="plan-card__pricing">
+                    <span class="price-amount" --data-base-price="{{this.price.value}}">
+                        {{this.price.value}} {{this.price.currency}}
+                    </span>
+                    <span class="fixed-period" --data-base-period="month">/ month</span>
+                </div>
+
+                <div class="plan-card__benefit">
+                    <ul>
+                        {{#each this.benefits}}
+                        <li>
+                            <a class="row" href="#explain__{{dashcase @key}}">
+                                <i class="fa {{lookup @root.icon @key}}"></i>
+                                <span class="benefit__key">{{lookup @root.alias @key}}</span>
+                            </a>
+                            <div class="row">
+                                <strong class="benefit__value"
+                                {{#if (hasOwn ../annotate @key)}}
+                                    title="{{get @key ../annotate}}"
+                                {{/if}}
+                                >
+                                    {{this}}
+                                </strong>
+                            </div>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+
+                <div class="plan-card__bottom">
+                    {{#if this.button.url}}
+                        <a href="{{this.button.url}}">{{this.button.text}}</a>
+                    {{else}}
+                        <a href="/" class="default">{{this.button.text}}</a>
+                    {{/if}}
+                </div>
             </div>
-            <div class="plan-card__benefit">
-                <ul>
-                    {{#each benefits}}
-                    <li>
-                        <a class="row" href="#explain__{{dashcase @key}}">
-                            <i class="fa {{lookup @root.icons @key}}"></i>
-                            <span class="benefit__key">{{lookup @root.aliases @key}}</span>
-                        </a>
-                        <div class="row">
-                            <strong class="benefit__value" {{#if (lookup @root.annotate @key)}}
-                                title="{{lookup (lookup @root.annotate @key) this}}"
-                            {{/if}}>
-                                {{this}}
-                            </strong>
-                        </div>
-                    </li>
-                    {{/each}}
-                </ul>
-            </div>
-            <div class="plan-card__bottom">
-                {{#if button.url}}
-                    <a href="{{button.url}}">{{button.text}}</a>
-                {{else}}
-                    <a href="/" class="default">{{button.text}}</a>
-                {{/if}}
-            </div>
-        </div>
+        
         {{/each}}
+
     </div>
+
     <div class="explain-section wrapper row justify-content-around">
-        {{#each explaination}}
-        <div class="explaination-card col-md-5" id="explain__{{dashcase name}}">
-            <div class="explaination-card__title">
-                <h4>{{lookup @root.aliases name}}</h4>
+
+        {{#each @root.expl}}
+
+            <div class="explaination-card col-md-5" id="explain__{{dashcase this.key}}">
+
+                <div class="explaination-card__title">
+                    <h4>{{lookup @root.alias this.key}}</h4>
+                </div>
+
+                <div class="explaination-card__content">
+                    <p>{{this.content}}</p>
+                </div>
+
             </div>
-            <div class="explaination-card__content">
-                <p>{{content}}</p>
-            </div>
-        </div>
+
         {{/each}}
+
     </div>
+
     {{> footer}}
 </body>
 </html>
