@@ -33,6 +33,7 @@ ExpressHelpers.autoloadViews(server, config.env.parsed.ENTRY_VIEWS, [ 'partials'
 
 
 // --------------------------- Middlewares ---------------------------
+server.use(express.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 ExpressHelpers.autoloadMiddlewares(server, config.env.parsed.ENTRY_MIDDLEWARES);
 
