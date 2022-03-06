@@ -14,16 +14,34 @@ class Task {
     privateScope.target = target;
     privateScope.datetime = datetools.addDays(new Date, 1);
     privateScope.invokeCount = 0;
-    privateScope.invokable = function invokableWithSharedScope() { 
-      callback(privateScope) 
+    privateScope.isActivated = false;
+    privateScope.invokable = function invokableWithSharedScope() {
+      callback(privateScope);
+      privateScope.invokeCount++;
     };
     privateScope.destroy = function destroyTask() {
       secret.delete(self);  // Unallocate reference
       privateScope.taskRef && privateScope.taskRef.cancel();
-    }
-    privateScope.taskRef = scheduler.scheduleJob(privateScope.datetime, privateScope.invokable);
+    };
+    privateScope.taskRef = scheduler.scheduleJob(privateScope.datetime, () => {});
 
     privateScope.taskRef.cancel();
+
+    // Delegating decision about the current task to its owner before the system 
+    // shutting down.
+    process.on('exit', function backupTodoLater() {
+      const isActivatedButNotInvoked = privateScope.isActivated && privateScope.invokeCount < 1;
+
+      if (isActivatedButNotInvoked) {
+        console.warn(`WARNING: The system is shutting down. Delegating task with following info:
+          JOB: ${ privateScope.owner.constructor.name.toString() }, 
+          TARGET: ${ privateScope.target.toString() }, 
+          DATETIME: ${ datetools.formatISO9075(privateScope.datetime) }
+        `);
+
+        privateScope.owner.futureDecision(privateScope);
+      }
+    });
   }
 
 
@@ -69,6 +87,10 @@ class Task {
       this.invoke();
       return;
     }
+
+    // This flag is used to let the system know that this task hasn't been invoked.
+    // This is important in case crash/reboot system, it will back up in time.
+    privateScope.isActivated = true;
     
     if (isToday) {
       const specifiedTimeToday = privateScope.datetime;
