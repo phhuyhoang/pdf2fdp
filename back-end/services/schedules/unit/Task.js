@@ -1,5 +1,6 @@
 const datetools = require('date-fns');
 const scheduler = require('node-schedule');
+const safeStringify = require('json-stringify-safe');
 const TasksBoard = require('../manage/TasksBoard');
 const secret = new WeakMap();
 
@@ -35,7 +36,7 @@ class Task {
       if (isActivatedButNotInvoked) {
         console.warn(`WARNING: The system is shutting down. Delegating task with following info:
           JOB: ${ privateScope.owner.constructor.name.toString() }, 
-          TARGET: ${ privateScope.target.toString() }, 
+          TARGET: ${ safeStringify(privateScope.target) }, 
           DATETIME: ${ datetools.formatISO9075(privateScope.datetime) }
         `);
 
