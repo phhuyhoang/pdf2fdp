@@ -21,6 +21,7 @@ const internal_env = {
   ENTRY_ROUTES: path.resolve(__dirname, '..', 'routes'),
   ENTRY_VIEWS: path.resolve(__dirname, '..', 'views'),
   ENTRY_MIDDLEWARES: path.resolve(__dirname, '..', 'middlewares'),
+  ENTRY_PUBLIC: path.resolve(__dirname, '../../front-end', 'public')
 };
 
 const project_env = internal_env.ENTRY_ROOT + '/.env';
