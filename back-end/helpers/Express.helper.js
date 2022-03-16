@@ -46,9 +46,15 @@ class ExpressHelper {
 
 
   static autoloadMiddlewares(server, folders) {
-    const middlewareFiles = glob.sync(path.resolve(folders, '**/*.middleware.js'), { absolute: true });
-    for (const file of middlewareFiles) {
-      const middleware = require(file);
+
+    const middlewares = fs.existsSync(folders)
+      ? require(folders)
+      : glob.sync(
+          path.resolve(folders, '**/*.middleware.js'), { absolute: true }
+        )
+        .map(file => require(file));
+
+    for (const middleware of middlewares) {
 
       if (determiner.isClass(middleware) && determiner.isFunction(middleware.handle)) {
         server.use(middleware.handle);
@@ -56,6 +62,7 @@ class ExpressHelper {
       else if (determiner.isPureFunction(middleware)) {
         server.use(middleware);
       }
+
     }
   }
 }
