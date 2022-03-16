@@ -20,6 +20,7 @@ const config = {
     username: env.parsed.DATABASE_USER_TEST,
     password: env.parsed.DATABASE_PWD_TEST,
     timezone: env.parsed.DATABASE_TIMEZONE_TEST,
+    benchmark: true,
   },
   application: {
     host: env.parsed.DATABASE_HOST,
@@ -28,6 +29,7 @@ const config = {
     username: env.parsed.DATABASE_USER,
     password: env.parsed.DATABASE_PWD,
     timezone: env.parsed.DATABASE_TIMEZONE,
+    benchmark: true,
   }
 }
 
