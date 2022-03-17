@@ -36,7 +36,7 @@
       <mj-column>
         <mj-table>
             <tr>
-            <td rowspan="2" width="47%" align="right">
+            <td rowspan="2" width="45%" align="right">
                 <img src="https://thkijq.dm.files.1drv.com/y4mIgU-dR1yb68DZw83z8h3fAq3jDs9m-f8aEtc_fKR2Lja-3eDK2S0WW7B-boxWaAXrmpXu2BUVUwSk68SP8GdWXdYMK5XreyAhQ82_NimA2ZvwvRxfnpve3yAoiuBeFbkw6NLh__TNT4tD-g5vjuwFXlodEdM5DLEigDEOuhCzQxPIz2ddhmJBK4Tpl0u8ezhNVMVGj4sP-nAKKMHb-KWVQ/circle_icons_document.png"/>
             </td>
             <td>
@@ -59,6 +59,9 @@
     {{!-- Info Section --}}
     <mj-section padding="0" css-class="info-section">
       <mj-column>
+        {{#with _request.body}}
+            <mj-text align="center" font-size="16px" font-family="Outfit, 'Google Sans'" color="#4a4a4f">Username: {{default username 'Unknown'}}</mj-text>
+        {{/with}}
         {{#with _request.locals.clientInfo}}
             <mj-text align="center" font-size="16px" font-family="Outfit, 'Google Sans'" color="#4a4a4f">Device: {{capitalize browser}} on {{capitalize platform}}</mj-text>
           {{#and this.city this.region}}
@@ -72,7 +75,7 @@
     </mj-section>
 
     {{!-- Code Section --}}
-    <mj-section padding-top="40px">
+    <mj-section padding-top="20px">
       <mj-column>
         <mj-text align="center" font-size="18px" font-family="Source Sans Pro, 'Google Sans'">If yes, use this verification code:</mj-text>
         <mj-text align="center" font-size="35px" font-weight="bolder" letter-spacing="3px" padding="25px" font-family="Source Sans Pro, 'Google Sans'">{{getVerificationCode}}</mj-text>
@@ -81,9 +84,9 @@
     </mj-section>
 
     {{!-- Contact Section --}}
-    <mj-section padding-bottom="40px">
+    <mj-section padding-bottom="20px">
       <mj-column>
-        <mj-divider border-color="#4a4a4f" border-width="1px" border-style="dashed" padding-bottom="40px">
+        <mj-divider border-color="#4a4a4f" border-width="1px" border-style="dashed" padding-bottom="20px">
         </mj-divider>
         <mj-text align="center">
           For more infomation, contact us:
