@@ -11,6 +11,8 @@ function StyledButton(name, icon, text) {
     number: 1,
   };
 
+  let disabled = false;
+
   const ButtonDivision = document.createElement('div');
 
   const Button = document.createElement('button')
@@ -30,6 +32,7 @@ function StyledButton(name, icon, text) {
   const ButtonText = document.createTextNode(text)
     .setParent(Button);
 
+
   /**
    * @param {string} icon
    */
@@ -44,13 +47,19 @@ function StyledButton(name, icon, text) {
   }
 
   ButtonDivision.disableButton = function disableButton() {
+    disabled = true;
     Button.setAttribute('disabled', 'true');
     return this;
   }
 
   ButtonDivision.enableButton = function enableButton() {
+    disabled = false;
     Button.removeAttribute('disabled');
     return this;
+  }
+
+  ButtonDivision.isDisabled = function isDisabled() {
+    return disabled;
   }
 
   ButtonDivision.asSimplestButton = function asSimplestButton() {
