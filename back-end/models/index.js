@@ -3,20 +3,25 @@
 const fs = require('fs');
 const path = require('path');
 
-const config = require('../configs/');
-const env = config.env.parsed;
-
-const sharable = Object.create(null)
-sharable._env = config.env.parsed;
+const configured = require('../configs/');
+var models;
 
 
+module.exports = (async function initModels() {
 
-fs.readdirSync(env.ENTRY_MODELS)
-  .filter(file => file.endsWith('.js') && file !== path.basename(__filename))
-  .forEach(async file => {
-    const model = require(`${env.ENTRY_MODELS}/${file}`);
-    const db = await config.db.useDevelop();
-    sharable[model.name] = model.init(db);
-  });
+  if (models) return models;
+  
+  const database = process.env.APPLICATION_ENV == 'development'
+    ? await configured.db.useDevelop()
+    : configured.db;
 
-module.exports = sharable;
+  models = {};
+  models.User = require('./User').init(database);
+  models.UserProfile = require('./UserProfile').init(database);
+  models.UserActivity = require('./UserActivity').init(database);
+  models.AccessState = require('./AccessState').init(database);
+  models.VerifyingUser = require('./VerifyingUser').init(database);
+
+  return models;
+  
+})();
