@@ -1,0 +1,33 @@
+@import './base/fonts.scss';
+@import './base/mixins.scss';
+@import './base/variables.scss';
+@import './base/functions.scss';
+@import './base/keyframes.scss';
+@import './base/default.scss';
+
+@import './components/ScrollBar.scss';
+@import './components/MultiStepProgress.scss';
+@import './components/SuccessModal.scss';
+@import './components/ColorStripe.scss';
+@import './components/Form.scss';
+@import './components/StyledButton.scss';
+
+@import './layout/header.scss';
+@import './layout/register/multi-step-section.scss';
+@import './layout/register/register-section.scss';
+@import './layout/footer.scss';
+
+@import './effects/ripple.scss';
+
+
+@media screen and (min-height: 900px) {
+  body {
+    display: flex;
+    justify-content: center;
+
+    footer {
+      position: fixed;
+      bottom: 0;
+    }
+  }
+}
