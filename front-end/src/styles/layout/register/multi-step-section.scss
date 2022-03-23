@@ -1,0 +1,22 @@
+.multi-step-section {
+  display: flex;
+  justify-content: center;
+  padding-top: 6rem;
+  padding-bottom: 2rem;
+  height: 544px;
+
+  padding-left: 10%;
+  align-items: center;
+
+  @include medium-screen {
+    padding-left: 0;
+    height: initial;
+    align-items: initial;
+    height: auto;
+  }
+
+  .multi-steps {
+    width: 475px;
+    margin: 0;
+  }
+}
