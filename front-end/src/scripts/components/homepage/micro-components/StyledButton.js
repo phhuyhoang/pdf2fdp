@@ -62,6 +62,11 @@ function StyledButton(name, icon, text) {
     return disabled;
   }
 
+  ButtonDivision.hideIcon = function hideIcon() {
+    ButtonIcon.style.setProperty('display', 'none');
+    return this;
+  }
+
   ButtonDivision.asSimplestButton = function asSimplestButton() {
     Button.removeChild(ButtonText);
     return this;
