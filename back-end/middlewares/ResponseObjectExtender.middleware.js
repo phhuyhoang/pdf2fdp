@@ -18,7 +18,7 @@ class ResponseObjectExtender {
         }
       };
 
-      return Promise.resolve(errorPacket).then(() => response.json(errorPacket));
+      return Promise.resolve(errorPacket).then(() => this.json(errorPacket));
     }
   }
   
