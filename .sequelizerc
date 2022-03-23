@@ -1,11 +1,14 @@
 // .sequelizerc
 
 const path = require('path');
+const configs = require('./back-end/configs')
+
+const env = configs.env.parsed;
 
 
 module.exports = {
-  "config": path.resolve('database', 'config.json'),
-  "models-path": path.resolve('models'),
-  "seeders-path": path.resolve('database', 'seeders'),
-  "migrations-path": path.resolve('database', 'migrations'),
+  "config": path.resolve(env.ENTRY_DATABASE, 'config.json'),
+  "models-path": path.resolve(env.ENTRY_MODELS),
+  "seeders-path": path.resolve(env.ENTRY_DATABASE, 'seeders'),
+  "migrations-path": path.resolve(env.ENTRY_DATABASE, 'migrations'),
 }
