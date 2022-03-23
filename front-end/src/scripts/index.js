@@ -4,11 +4,10 @@ const size = require('./helpers/util/size.util');
 
 const effects = require('./misc/effects');
 
-const FileInput = require('./components/homepage/FileInput');
-const EmptyProgressBar = require('./components/homepage/EmptyProgressBar');
-const ProgressBar = require('./components/homepage/ProgressBar');
-const StyledButton = require('./components/homepage/micro-components/StyledButton');
-const ConvertButton = require('./components/homepage/micro-components/ConvertButton');
+const FileInput = require('./components/homepage/FileInput.component');
+const EmptyProgressBar = require('./components/homepage/EmptyProgressBar.component');
+const ProgressBar = require('./components/homepage/ProgressBar.component');
+const ConvertButton = require('./components/homepage/micro-components/ConvertButton.component');
 
 /**
  * Global variables
