@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{> head}}
+    <title>PDF2FDP - Sign Up</title>
+    <link rel="stylesheet" href="styles/3f3fa7db195d2f6a3799.css">
+    <script type="text/javascript" src="lib/getEventListeners.min.js"></script>
+    <script type="text/javascript" src="lib/xregexp-all.min.js"></script>
+    <script type="text/javascript" src="scripts/3f3fa7db195d2f6a3799.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body class="row">
+    {{> header}}
+    <div class="multi-step-section col-lg-5 col-12">
+    </div>
+    <div class="register-form-section col-lg-7 col-12">
+        <form class="register-form" role="form" method="POST" action="/register">
+            <!-- empty -->
+            <fieldset>
+                <div class="color-stripe"></div>
+                <div class="form__title row">
+                    <legend>Account Info</legend>
+                </div>
+                <div class="form__body row">
+                    <div class="form-field col-md-10 offset-md-1">
+                        <input type="text" name="username" maxlength="50" placeholder=" ">
+                        <div class="form-field__label">
+                            <i class="fa fa-user-circle"></i>
+                            <label for="username">Username</label>
+                        </div>
+                        <small>
+                            Only letters, numbers, - and _ can be used.
+                        </small>
+                    </div>
+                    <div class="form-field col-md-10 offset-md-1">
+                        <input type="password" name="password" maxlength="50" placeholder=" ">
+                        <div class="form-field__label">
+                            <i class="fa fa-fingerprint"></i>
+                            <label for="password">Password</label>
+                        </div>
+                        <small>
+                            A strong password must contain uppercase, lowercase, number, special character and at least 8 characters.
+                        </small>
+                    </div>
+                    <div class="form-field col-md-10 offset-md-1">
+                        <input type="password" name="repeat-password" maxlength="50" placeholder=" ">
+                        <div class="form-field__label">
+                            <i class="fa fa-fingerprint"></i>
+                            <label for="repeat-password">Repeat Password</label>
+                        </div>
+                        <small>
+                            Must match the password above.
+                        </small>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="color-stripe"></div>
+                <div class="form__title row">
+                    <legend>Profile Info</legend>
+                </div>
+                <div class="form__body row">
+                    <div class="form-field col-md-10 offset-md-1">
+                        <input type="text" name="firstname" maxlength="30" placeholder=" ">
+                        <div class="form-field__label">
+                            <i class="fa fa-tag"></i>
+                            <label for="firstname">First Name</label>
+                        </div>
+                        <small>
+                            Must be a meaningful name.
+                        </small>
+                    </div>
+                    <div class="form-field col-md-10 offset-md-1">
+                        <input type="text" name="lastname" maxlength="30" placeholder=" ">
+                        <div class="form-field__label">
+                            <i class="fa fa-tag"></i>
+                            <label for="lastname">Last Name</label>
+                        </div>
+                        <small>
+                            Must be a meaningful name.
+                        </small>
+                    </div>
+                    <div class="form-field col-md-10 offset-md-1">
+                        <input type="email" name="email-address" maxlength="50" placeholder=" ">
+                        <div class="form-field__label">
+                            <i class="fa fa-at"></i>
+                            <label for="email-address">Email Address</label>
+                        </div>
+                        <small>
+                            Not used for marketing.
+                        </small>
+                    </div>
+                    <div class="form-field col-md-10 offset-md-1">
+                        <input type="tel" name="phone-number" maxlength="15" placeholder=" ">
+                        <div class="form-field__label">
+                            <i class="fa fa-mobile-alt"></i>
+                            <label for="phone-number">Phone Number</label>
+                        </div>
+                        <small>
+                            Not used for marketing.
+                        </small>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <div class="color-stripe"></div>
+                <div class="form__title row">
+                    <legend>Verify Email Address</legend>
+                </div>
+                <div class="form__body row">
+                    <div class="form-field col-md-10 offset-md-1">
+                        <input type="text" maxlength="6" name="verification-code" placeholder=" ">
+                        <div class="form-field__label">
+                            <i class="fa fa-key" aria-hidden="true"></i>
+                            <label for="verification-code">Verification Code</label>
+                        </div>
+                        <small>
+                            6-digit code, sent via email. <a id="resend-verification-code" href="#">Missing code?</a>
+                        </small>
+                    </div>
+                    <div class="form-field col-md-10 offset-md-1">
+                        <label for="terms-policy" class="form-field__checkbox">
+                            <input type="checkbox" name="terms" id="terms-policy">
+                            <span class="checkmark">
+                                <i class="fa fa-check"></i>
+                            </span>
+                            <span class="statement">
+                                I accept the <a href="/terms">Terms of Service</a> and the <a href="/privacy">Privacy Policy</a>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="col-md-10 offset-md-1">
+                        <div class="google-recaptcha"></div>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    {{> footer}}
+</body>
+</html>
