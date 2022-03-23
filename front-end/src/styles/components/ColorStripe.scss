@@ -1,0 +1,29 @@
+$yellow: #f5bf00;
+$orange: #e88800;
+$deepred: #e10337;
+$lipstick: #ba0263;
+$purple: #873f95;
+$blue: #3c70b3;
+$niagra: #04ac80;
+$green: #88c15f;
+
+
+.color-stripe {
+  height: 5px;
+  background-image: linear-gradient(to right,
+    $yellow 0%, 
+    $yellow calc(1 / 7 * 100%),
+    $orange calc(1 / 7 * 100%),
+    $orange calc(2 / 7 * 100%),
+    $deepred calc(2 / 7 * 100%),
+    $deepred calc(3 / 7 * 100%),
+    $lipstick calc(3 / 7 * 100%),
+    $lipstick calc(4 / 7 * 100%),
+    $purple calc(4 / 7 * 100%),
+    $purple calc(5 / 7 * 100%),
+    $niagra calc(5 / 7 * 100%),
+    $niagra calc(6 / 7 * 100%),
+    $green calc(6 / 7 * 100%),
+    $green 100%
+  );
+}

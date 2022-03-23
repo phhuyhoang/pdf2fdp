@@ -1,0 +1,104 @@
+ul.multi-steps {
+  
+  &.style-1 {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 0;
+
+    @include small-screen {
+      box-shadow: none;
+    }
+
+    > li {
+      font-family: 'Source Sans pro';
+      font-size: 0.8rem;
+      text-align: center;
+      word-wrap: break-word;
+      color: $red;
+
+      display: inherit;
+      position: relative;
+      flex: 1;
+      flex-direction: column;
+      counter-increment: step;
+
+      &::before {
+        display: block;
+        background-color: $red;
+        content: "\f00c";
+        font-weight: 900;
+        font-family: "Font Awesome 5 Free";
+        color: $white;
+
+        left: 50%;
+        width: 2rem;
+        height: 2rem;
+        line-height: 1.5rem;
+        padding-top: 0.2rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        align-self: center;
+        
+        border-width: 2px;
+        border-style: solid;
+        border-color: $red;
+        border-radius: 50%;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        height: 3px;
+        width: 100%;
+        background-color: $red;
+        top: 1rem;
+        z-index: -1;
+      }
+
+      &:last-child {
+
+        &::after {
+          display: none;
+        }
+
+      }
+
+      &.current {
+
+        &::before {
+          content: counter(step);
+          font-family: 'Source Sans Pro';
+          font-weight: 700;
+          font-size: 1rem;
+          padding-top: 0.1rem;
+        }
+
+        &::after {
+          background-color: $lightgray;
+        }
+
+        ~ li {
+          color: $gray;
+
+          &::before {
+            content: counter(step);
+            font-family: 'Source Sans Pro';
+            font-weight: 700;
+            font-size: 1rem;
+            padding-top: 0.1rem;
+            color: $darkgray;
+            background-color: $lightgray;
+            border-color: $lightgray;
+          }
+
+          &::after {
+            background-color: $lightgray;
+          }
+        }
+
+      }
+    }
+  }
+
+}
