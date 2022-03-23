@@ -1,0 +1,123 @@
+.success-modal {
+
+  &.style-1 {
+
+    width: 550px;
+    background-color: $white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    animation: modal-show 1s ease-out;
+
+    .success-modal {
+
+      &__wrapper {
+        padding: 20px;
+      }
+
+      &__header {
+        display: flex;
+        position: relative;
+        justify-content: center;
+        align-items: center;
+        height: 175px;
+        margin: -20px -20px 0;
+        background-color: $red;
+
+        .circle-box {
+          position: relative;
+          width: 95px;
+          height: 95px;
+
+          svg {
+            position: absolute;
+
+            circle {
+              stroke-dasharray: 300;
+              stroke-dashoffset: 300;
+              animation: success-modal-svg 0.8s linear normal forwards;
+              animation-delay: 0.1s;
+            }
+
+            path {
+              stroke-dasharray: 150;
+              stroke-dashoffset: 150;
+              animation: success-modal-svg 0.8s ease-in-out normal forwards;
+              animation-delay: 0.6s;
+            }
+          }
+        }
+
+        .modal-dismiss {
+          border: none;
+          background-color: transparent;
+          position: absolute;
+          top: 10px;
+          right: 10px;
+
+          i {
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 24px;
+            transition: color 0.15s ease-in;
+
+            &:hover {
+              color: white;
+            }
+          }
+        }
+      }
+
+      &__body {
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: center;
+        font-family: "Source Sans Pro";
+        padding: 1rem;
+        text-align: center;
+
+        h4 {
+          font-family: "Outfit";
+          font-size: 1.5rem;
+        }
+
+        button {
+          margin-top: 15px;
+        }
+      }
+
+    }
+
+  }
+
+}
+
+
+.overlay {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+}
+
+
+@keyframes success-modal-svg {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes modal-show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,238 @@
+fieldset {
+
+  .form__title {
+    display: flex;
+    justify-content: center;
+    color: $red;
+    padding: 2rem 1.5rem 1rem;
+  }
+
+  .form__body {
+    font-family: 'Montserrat';
+    font-weight: bold;
+    padding: 1rem 3rem 1rem;
+
+    > div {
+      position: relative;
+      padding-left: 0rem;
+      padding-right: 1rem;
+
+      + div {
+        margin-top: 1.5rem;
+      }
+
+      &.form-field {
+        position: relative;
+
+        input:not([type="checkbox"]) {
+          width: 100%;
+          font-size: 0.8rem;
+          height: 2.5rem;
+          border: none;
+          margin-top: 0.2rem;
+          padding-top: 0;
+          padding-bottom: 0;
+          text-indent: 2rem;
+          border-bottom: 2px solid $gray;
+          transition: all 0.175s linear;
+
+          &:focus {
+            text-indent: 0;
+          }
+
+          &:not(:focus):not(:placeholder-shown) {
+            ~ div.form-field__label {
+              label {
+                display: none;
+                animation-delay: 0.175s;
+              }
+            }
+          }
+
+          &:focus {
+            outline: none;
+            padding-left: 0.5rem;
+            border: 2px solid $gray;
+            border-radius: 5px;
+
+            ~ div.form-field__label {
+              top: -0.5rem;
+              left: 0.5rem;
+              padding: 0 0.25rem;
+              background-color: $white;
+
+              i {
+                margin-right: 0;
+
+                &::before {
+                  font-size: 0.75rem;
+                }
+              }
+
+              label {
+                display: inline;
+                font-size: 0.75rem;
+              }
+            }
+          }
+        }
+
+        .form-field__label {
+          position: absolute;
+          pointer-events: none;
+          top: 0.65rem;
+          left: 0.2rem;
+          transition: all 0.25s ease-in;
+
+          i {
+            pointer-events: inherit;
+
+            margin-right: 0.5rem;
+            transition: all 0.25s ease-in;
+            &::before {
+              font-size: 1.35rem;
+              color: $gray;
+              transition: all 0.25s ease-in;
+            }
+          }
+
+          label {
+            font-family: inherit;
+            font-weight: lighter;
+            color: $gray;
+            pointer-events: inherit;
+            transition: all 0.25s ease-in;
+          }
+        }
+
+        label.form-field__checkbox {
+          display: inline-block;
+          padding: 1.5rem 0;
+          font-family: 'Outfit';
+          font-weight: lighter;
+          color: $darkgray;
+          user-select: none;
+
+          span.statement {
+            position: absolute;
+            cursor: pointer;
+            inset: 1.5px 1.4rem;
+
+            a {
+              font-family: inherit;
+              font-size: inherit;
+              font-weight: inherit;
+              color: $red;
+
+              &:hover,
+              &:focus {
+                color: $darkred;
+                text-decoration: underline;
+              }
+            }
+          }
+
+          span.checkmark {
+            display: inline-block;
+            position: absolute;
+            cursor: pointer;
+            height: 0.9rem;
+            width: 0.9rem;
+            top: 4px;
+            background: linear-gradient(top, #ff6663 0%, $red 50%, $darkred 100%);
+            border-radius: 3px;
+            box-shadow: inset 0px 3px 3px rgba(0,0,0,0.5), 
+              0px 3px 0px rgba(255,255,255,.4);
+
+            i.fa.fa-check {
+              position: absolute;
+              color: $white;
+              font-size: .65rem;
+              inset: 2px;
+              opacity: 0;
+            }
+          }
+
+          input[type="checkbox"] {
+            appearance: none;
+            display: none;
+
+            &:checked ~ span.checkmark i {
+              opacity: 1;
+            }
+          }
+
+        }
+
+        small {
+          font-family: 'Source Sans Pro';
+          font-weight: lighter;
+          color: $gray;
+
+          &.invalid {
+            color: red;
+          }
+
+          &.valid {
+            color: green;
+          }
+
+          &.warning {
+            color: #f39c12;
+          }
+
+          a {
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            color: $red;
+
+            &:hover,
+            &:focus {
+              color: $darkred;
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+
+    }
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+  }
+
+  input[type="password"] {
+    
+    &:focus,
+    &:not(:placeholder-shown) {
+      font-family: 'Verdana';
+      font-size: 1rem;
+      font-weight: 1.5rem;
+      letter-spacing: 0.125rem;
+
+      &::placeholder {
+        color: transparent;
+      }
+    }
+
+    &:blank {
+      font-family: 'Montserrat';
+      letter-spacing: 0;
+    }
+  
+  }
+
+  .form__bottom {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 1rem 0;
+
+    button {
+      box-shadow: none !important;
+    }
+  }  
+
+}
