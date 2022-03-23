@@ -51,6 +51,44 @@ module.exports.init = function () {
     return this;
   }
 
+  HTMLElement.prototype.copyEventListeners = function copyEventListeners(target) {
+    /**
+     * https://cdn.jsdelivr.net/npm/geteventlisteners@1.1.0/src/getEventListeners.min.js
+     */
+    if (typeof target.getEventListeners == 'function') {
+      const events = target.getEventListeners() || Object.create(null);
+      const names = Object.keys(events);
+
+      for (const name of names) {
+        const eventListenerList = events[name] || [];
+        eventListenerList.forEach(event => this.addEventListener(event.type, event.listener, event.useCapture));
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  HTMLElement.prototype.deepClone = function deepCloneElement() {
+    const clone = this.cloneNode(true);
+    
+    if (typeof clone.copyEventListeners == 'function') {
+      clone.copyEventListeners(this);
+    }
+
+    return clone;
+  }
+
+  HTMLElement.prototype.copyChildNodesOf = function copyChildNodesOf(target) {
+    const children = Array.from(target.childNodes);
+    const clones = children.map(child => this.deepClone.call(child));
+
+    this.innerHTML = '';
+    clones.forEach(node => this.append(node));
+    return clones;
+  }
+
   /**
    * @param {string} name
    * @param {number} style
