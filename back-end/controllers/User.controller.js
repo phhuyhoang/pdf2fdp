@@ -75,7 +75,7 @@ class UserController {
         .after(c_common.period.ONE_DAY)
         .enforce();
 
-      response.send({
+      response.json({
         fileName: compressor.filename,
         fileSize: actualFileSize,
         downloadLink: relativeDownloadLink,
