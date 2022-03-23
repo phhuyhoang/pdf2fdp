@@ -2,7 +2,7 @@ const autoload = require('./helpers/autoload/prototype').init();
 
 const effect = require('./misc/effects');
 
-const ToggleSwitch = require('./components/pricing/ToggleSwitch');
+const ToggleSwitch = require('./components/pricing/ToggleSwitch.component');
 
 
 const toYearlyPrice = function toYearlyPrice(monthly_price) {
@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
   // Apply pulse click effect
   effect.ripple.applyEffect();
 
-  const top_section_plans = document.querySelector('.top-section__plans');
-  const plan_card_pricings = document.querySelectorAll('.plan-card__pricing');
+  const topSectionPlan = document.querySelector('.top-section__plans');
+  const planCardPricing = document.querySelectorAll('.plan-card__pricing');
 
-  const toggle_switch = new ToggleSwitch().setParent(top_section_plans);
+  const toggle_switch = new ToggleSwitch().setParent(topSectionPlan);
 
   toggle_switch.$button_left.textContent = 'Monthly';
   toggle_switch.$button_right.textContent = 'Yearly';
@@ -25,20 +25,24 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 
 
   toggle_switch.$button_left.addEventListener('click', function changePeriodToMonthly() {
-    for (const card_pricing of plan_card_pricings) {
-      const base_price = card_pricing.firstElementChild.dataset.basePrice;
-      const base_period = card_pricing.lastElementChild.dataset.basePeriod;
-      card_pricing.firstElementChild.textContent = `${parseFloat(base_price)} USD`;
-      card_pricing.lastElementChild.textContent = `/ ${base_period}`;
+
+    for (const cardPricing of planCardPricing) {
+      const basePrice = cardPricing.firstElementChild.dataset.basePrice;
+      const basePeriod = cardPricing.lastElementChild.dataset.basePeriod;
+      cardPricing.firstElementChild.textContent = `${parseFloat(basePrice)} USD`;
+      cardPricing.lastElementChild.textContent = `/ ${basePeriod}`;
     }
+
   });
 
   
   toggle_switch.$button_right.addEventListener('click', function changePeriodToYearly() {
-    for (const card_pricing of plan_card_pricings) {
-      const base_price = card_pricing.firstElementChild.dataset.basePrice;
-      card_pricing.firstElementChild.textContent = `${toYearlyPrice(base_price)} USD`;
-      card_pricing.lastElementChild.textContent = '/ year';
+
+    for (const cardPricing of planCardPricing) {
+      const basePrice = cardPricing.firstElementChild.dataset.basePrice;
+      cardPricing.firstElementChild.textContent = `${toYearlyPrice(basePrice)} USD`;
+      cardPricing.lastElementChild.textContent = '/ year';
     }
+
   });
 })
