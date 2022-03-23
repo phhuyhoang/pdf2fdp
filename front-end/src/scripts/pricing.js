@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 
   toggle_switch.$button_left.addEventListener('click', function changePeriodToMonthly() {
     for (const card_pricing of plan_card_pricings) {
-      const base_price = card_pricing.firstElementChild.getAttribute('--data-base-price');
-      const base_period = card_pricing.lastElementChild.getAttribute('--data-base-period');
+      const base_price = card_pricing.firstElementChild.dataset.basePrice;
+      const base_period = card_pricing.lastElementChild.dataset.basePeriod;
       card_pricing.firstElementChild.textContent = `${parseFloat(base_price)} USD`;
       card_pricing.lastElementChild.textContent = `/ ${base_period}`;
     }
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
   
   toggle_switch.$button_right.addEventListener('click', function changePeriodToYearly() {
     for (const card_pricing of plan_card_pricings) {
-      const base_price = card_pricing.firstElementChild.getAttribute('--data-base-price');
+      const base_price = card_pricing.firstElementChild.dataset.basePrice;
       card_pricing.firstElementChild.textContent = `${toYearlyPrice(base_price)} USD`;
       card_pricing.lastElementChild.textContent = '/ year';
     }
