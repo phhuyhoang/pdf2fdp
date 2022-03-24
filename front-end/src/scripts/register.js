@@ -16,10 +16,6 @@ const StyledButton = require('./components/register/micro-components/StyledButto
 const effect = require('./misc/effects');
 const synchronizedFormData = {};
 
-const globalContext = {
-  verificationCodeSent: false,
-};
-
 
 const eventListeners = {
   username: {

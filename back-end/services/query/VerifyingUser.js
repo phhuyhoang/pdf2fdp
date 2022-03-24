@@ -1,5 +1,7 @@
 const Sequelize = require('sequelize');
+const datetools = require('date-fns');
 const models = require('../../models');
+const c_rule = require('../../constants/rule.constants');
 
 
 /**
@@ -131,6 +133,10 @@ module.exports.resendVerificationCode = async function resendVerificationCode(
       {
         where: {
           emailAddress,
+          lastResentDateTime: {
+            // To prevent user spamming resend verification code
+            [Sequelize.Op.lte]: datetools.addSeconds(new Date(), -c_rule.VERIFICATION_CODE_REFRESH_INTERVAL),
+          }
         },
         limit: 1
       }
