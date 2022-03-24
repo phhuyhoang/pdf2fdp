@@ -71,6 +71,10 @@ function StyledButton(name, icon, text) {
     return this;
   }
 
+  root.clickButton = function clickButton() {
+    return descendant.button.click();
+  }
+
   root.isDisabled = function isDisabled() {
     return disabled;
   }

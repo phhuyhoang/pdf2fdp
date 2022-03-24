@@ -1,5 +1,5 @@
 const DOM = require('../../helpers/util/dom.util');
-const StyledButton = require('./micro-components/StyledButton');
+const StyledButton = require('./micro-components/StyledButton.component');
 
 
 const template = `

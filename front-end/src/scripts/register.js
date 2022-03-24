@@ -3,23 +3,26 @@
  * promise.then instead of ES7 async-await
  */
 const autoload = require('./helpers/autoload/prototype').init();
+const DOM = require('./helpers/util/dom.util');
+
+const MultiStepProgress = require('./components/register/MultiStepProgress.component');
+const SuccessModal = require('./components/register/SuccessModal.component');
+const ChainableFieldSet = require('./components/register/ChainableFieldSet.component');
+const FormFieldInput = require('./components/register/micro-components/FormFieldInput.component');
+const FormFieldCheckbox = require('./components/register/micro-components/FormFieldCheckbox.component');
+const GoogleCaptcha = require('./components/register/micro-components/GoogleCaptcha.component');
+const StyledButton = require('./components/register/micro-components/StyledButton.component');
 
 const effect = require('./misc/effects');
-const serverSideValidateFormData = {};
+const synchronizedFormData = {};
 
 const globalContext = {
   verificationCodeSent: false,
 };
 
-const MultiStepProgress = require('./components/register/MultiStepProgress');
-const SuccessModal = require('./components/register/SuccessModal.component');
-const StyledButton = require('./components/register/micro-components/StyledButton');
 
-const SPECIAL_CHARACTER_RE = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
-
-
-var eventListeners = {
-  $username: {
+const eventListeners = {
+  username: {
     normalValidate: function validateUsername(input) {
       if (!input.value.length) {
         input.recover();
@@ -49,11 +52,10 @@ var eventListeners = {
         input.alert('Must not be empty');
         return false;
       }
-      // TODO: Gửi form lên server để kiểm tra
       return true;
     },
   },
-  $password: {
+  password: {
     normalValidate: function validatePassword(input) {
       if (!input.value.length) {
         input.recover();
@@ -68,25 +70,27 @@ var eventListeners = {
         return false;
       }
 
-      const lower_match = input.value.toString().match(/[a-z]/g) || [];
-      const upper_match = input.value.toString().match(/[A-Z]/g) || [];
-      const number_match = input.value.toString().match(/[0-9]/g) || [];
-      const special_match = input.value.toString().match(RegExp(SPECIAL_CHARACTER_RE, 'g')) || [];
+      const SPECIAL_CHARACTER_RE = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
-      if (lower_match.length) {
-        const enough_strong = upper_match.length && number_match.length && special_match.length;
-        const enough_secure = number_match.length && upper_match.length;
+      const lowerCaseExact = input.value.toString().match(/[a-z]/g) || [];
+      const upperCaseExact = input.value.toString().match(/[A-Z]/g) || [];
+      const numberExact = input.value.toString().match(/[0-9]/g) || [];
+      const specialExact = input.value.toString().match(RegExp(SPECIAL_CHARACTER_RE, 'g')) || [];
 
-        if (enough_strong && input.value.length > 13) {
+      if (lowerCaseExact.length) {
+        const enoughStrong = upperCaseExact.length && numberExact.length && specialExact.length;
+        const enoughSecure = numberExact.length && upperCaseExact.length;
+
+        if (enoughStrong && input.value.length > 13) {
           input.pass('Password strength: Very strong');
         }
-        else if (enough_secure && input.value.length >= 10 || input.value.length >= 20) {
+        else if (enoughSecure && input.value.length >= 10 || input.value.length >= 20) {
           input.pass('Password strength: Strong');
         }
-        else if (enough_secure && input.value.length >= 8 || input.value.length >= 15) {
+        else if (enoughSecure && input.value.length >= 8 || input.value.length >= 15) {
           input.pass('Password strength: Good');
         }
-        else if (upper_match.length && input.value.length >= 8 || input.value.length >= 12) {
+        else if (upperCaseExact.length && input.value.length >= 8 || input.value.length >= 12) {
           input.warning('Password strength: Normal');
         }
         else if (input.value.length >= 10) {
@@ -100,13 +104,13 @@ var eventListeners = {
       }
     }
   },
-  $repeat_password: {
+  repeat_password: {
     normalValidate: function validatePasswordRepeat(input) {
       if (!input.value.length) {
         input.recover();
         return false;
       }
-      if (input.value != serverSideValidateFormData['password']) {
+      if (input.value != synchronizedFormData['password']) {
         input.alert('Not match with password above');
         return false;
       }
@@ -115,7 +119,7 @@ var eventListeners = {
       return true;
     }
   },
-  $firstname: {
+  firstname: {
     normalValidate: function validateFirstName(input) {
       if (!input.value.length) {
         input.recover();
@@ -129,12 +133,12 @@ var eventListeners = {
       return true;
     }
   },
-  $lastname: {
+  lastname: {
     normalValidate: function validateLastName(input) {
-      return eventListeners.$firstname.normalValidate(input);
+      return eventListeners.firstname.normalValidate(input);
     }
   },
-  $email_address: {
+  email_address: {
     normalValidate: function validateEmail(input) {
       if (!input.value.length) {
         input.recover();
@@ -152,15 +156,15 @@ var eventListeners = {
         return false;
       }
 
-      const [ local_part, domain_part ] = input.value.split('@');
-      const splitted_domain_part = domain_part.split('.') || [];
+      const [ localPartEmail, domainPartEmail ] = input.value.split('@');
+      const splittedLocalPart = domainPartEmail.split('.') || [];
 
-      if (local_part.length > 64) {
+      if (localPartEmail.length > 64) {
         input.alert('Your local part email too long. Therefore, your email is not valid.')
         return false;
       }
 
-      if (splitted_domain_part.some(part => part.length > 63)) {
+      if (splittedLocalPart.some(part => part.length > 63)) {
         input.alert('Your domain part email too long. Therefore, your email is not valid.');
         return false;
       }
@@ -176,7 +180,7 @@ var eventListeners = {
       return true;
     }
   },
-  $phone_number: {
+  phone_number: {
     normalValidate: function validatePhoneNumber(input) {
       if (!input.value.length) {
         input.recover();
@@ -197,126 +201,85 @@ var eventListeners = {
 }
 
 
-const convertSecondToMinute = function convertSecondToMinute(sec) {
-  const minutes = parseInt(+sec / 60);
-  const seconds = +sec - (minutes * 60);
-  return minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
-}
-
-
-const getEventListenerCallback = function getEventListenerCallback(eventName, componentName) {
-  const listeners = eventListeners['$' + componentName] || {};
-  const onEventCallback = listeners[eventName] || listeners.normalValidate || (function (){});
-  return onEventCallback;
-}
-
-
-/**`
- * @param {Array} fields
- */
-const isAllFieldFilledOut = function isAllFieldFilledOut(fields) {
-  return Array.from(fields).every(field => {
-    switch (true) {
-      case field.$input.type == 'checkbox':
-      case field.$input.type == 'radio':
-        return field.$input.checked;
-      default:
-        return field.$input?.value?.length > 0;
-    }
-  });
-}
-
-
-const isAllFieldValidated = function isAllFieldValidated(fields) {
-  return Array.from(fields)
-    .every(field => {
-      // Check current field state
-      const isPendingState = field.$description.classList.contains('pending');
-      const isInvalidState = field.$description.classList.contains('invalid');
-      const isNotFalsyState = !isPendingState && !isInvalidState;
-
-      // On submit validate
-      const snakeCaseFieldName = field.$input.getAttribute('name').replace(/\-/, '_');
-      const onSubmitCallback = getEventListenerCallback('onSubmit', snakeCaseFieldName);
-      const isSubmittedAssumePassed = onSubmitCallback(field.$input);
-      return isNotFalsyState && isSubmittedAssumePassed;
-    })
-}
-
-
 const useFetchAPI = function useFetchAPI(endpoint, method, body, header = null) {
   const headers = header || {
     'Content-Type': 'application/json;charset=UTF-8',
   };
-
   return fetch(endpoint, { method, body, headers })
-    .then(response => response.json());;
+    .then(response => response.json());
+};
+
+/**
+ * @param {String} event - Event name
+ * @param {String} component - Component name
+ */
+const getEventListenerCallback = function getEventListenerCallback(event, component) {
+  const assigneeListeners = eventListeners[component] || {};
+  const listenerCallback = assigneeListeners[event] || assigneeListeners.normalValidate || (function (){});
+  return listenerCallback;
 }
 
+/**
+ * @param {ChainableFieldSet} fieldset
+ */
+const isThisFormFilledAll = function isThisFormFilledAll(fieldset) {
+  return fieldset.attachedFields.every(function checkFillingStateOf(field) {
+    const inputElement = field.$input;
 
-const normalizeDollarSignFieldset = function normalizeDollarSignFieldset(fieldset) {
-  const formBody = fieldset.$body || {};
-  const fieldWithoutDollarSign = Object.keys(formBody).map(key => key.replace(/^\$/, ''));
-  return fieldWithoutDollarSign;
-}
-
-
-const requestServerSideValidate = function requestServerSideValidate(fieldset) {
-  const filledFieldSubset = serverSideValidateFormData.subset(...normalizeDollarSignFieldset(fieldset));
-
-  return useFetchAPI('register/validate', 'POST', JSON.stringify(filledFieldSubset))
-}
-
-
-const requestServerSendVerificationCode = function requestServerSendVerificationCode() {
-  const wholeFormData = serverSideValidateFormData;
-
-  return useFetchAPI('register/code', 'POST', JSON.stringify(wholeFormData));
-}
-
-
-const submitRegister = function submitRegister() {
-  const wholeFormData = serverSideValidateFormData;
-
-  return useFetchAPI('register/submit', 'POST', JSON.stringify(wholeFormData))
-}
-
-
-const requestResendVerificationCode = function requestResendVerificationCode(event) {
-  const descriptionElement = this.parentElement;
-  const formFieldElement = descriptionElement.parentElement;
-  const childSitter = document.createElement('small');
-  const originalCodeResenderLink = descriptionElement.innerHTML;
-  const wholeFormData = serverSideValidateFormData;
-
-  let   countdownValue = 10;
-  const countdownIcon = document.createElement('i').setClass('fa fa-envelope');
-  const countdownText = document.createTextNode('Resend code in ');
-  const countdownElement = document.createElement('b');
-  countdownElement.innerText = convertSecondToMinute(countdownValue);
-  childSitter.copyChildNodesOf(descriptionElement);
-
-  descriptionElement.innerHTML = '';
-  descriptionElement.appendChild(countdownIcon);
-  descriptionElement.appendChild(countdownText);
-  descriptionElement.appendChild(countdownElement);
-
-  useFetchAPI('register/resend', 'POST', JSON.stringify(wholeFormData));
-
-  // Fake state, to stop users restore the resend link when counting down
-  const disablingPendingState = formFieldElement?.$input.pending;
-  if (disablingPendingState) formFieldElement.$input.pending = () => {};
-
-  const interval = setInterval(function resendTimerCountdown() {
-    countdownElement.innerText = convertSecondToMinute(--countdownValue);
-
-    if (countdownValue <= 0) {
-      descriptionElement.innerHTML = originalCodeResenderLink;
-      clearInterval(interval);
-      descriptionElement.copyChildNodesOf(childSitter);
-      if (disablingPendingState) formFieldElement.$input.pending = disablingPendingState;
+    switch (true) {
+      case inputElement.type == 'checkbox':
+      case inputElement.type == 'radiobox':
+        return inputElement.checked;
+      default:
+        return inputElement.value?.length > 0;
     }
-  }, 1000);
+  })
+}
+
+const isThisFormValidatedAll = function isThisFormValidatedAll(fieldset) {
+  return fieldset.attachedFields.every(function checkValidatedStateOf(field) {
+    const inputElement = field.$input;
+    const descriptionElement = field.$description;
+
+    const isPendingState = descriptionElement.classList.contains('pending');
+    const isInvalidState = descriptionElement.classList.contains('invalid');
+    const isNotFalsyState = !isPendingState && !isInvalidState;
+
+    const snakeCaseFieldName = inputElement.getAttribute('name').replace(/\-/g, '_');
+    const onSubmitCallback = getEventListenerCallback('onSubmit', snakeCaseFieldName);
+    const isSubmittedAssumePassed = onSubmitCallback(inputElement);
+    return isNotFalsyState && isSubmittedAssumePassed;
+  })
+}
+
+const serverRequestAsync = {
+  requestToValidateFormFields: function requestServerSideValidateForm(fieldset) {
+    const normalizedFieldNames = fieldset.attachedFields.map(field => field.context.name.replace(/^\$/, '').replace(/\-/, '_'));
+    const filledFieldSubset = synchronizedFormData.subset(...normalizedFieldNames);
+    console.log(fieldset, normalizedFieldNames, filledFieldSubset, synchronizedFormData);
+
+    return useFetchAPI('register/validate', 'POST', JSON.stringify(filledFieldSubset));
+  },
+
+  requestToGetVerificationCodeByEmail: function requestToGetVerificationCodeByEmail() {
+    return useFetchAPI('register/code', 'POST', JSON.stringify(synchronizedFormData));
+  },
+
+  requestToResendVerificationCode: function requestToResendVerificationCode() {
+    return useFetchAPI('register/resend', 'POST', JSON.stringify(synchronizedFormData));
+  },
+
+  requestToSubmitRegisterForm: function requestToSubmitRegisterForm() {
+    return useFetchAPI('register/submit', 'POST', JSON.stringify(synchronizedFormData))
+  }
+}
+
+const utils = {
+  convertSecondToMinute: function convertSecondToMinute(sec) {
+    const minutes = parseInt(+sec / 60);
+    const seconds = +sec - (minutes * 60);
+    return minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+  }
 }
 
 
@@ -327,323 +290,136 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 
   const multi_step_section = document.querySelector('.multi-step-section');
   const register_form = document.querySelector('.register-form');
-  const fieldsets = register_form.querySelectorAll('fieldset');
-  const local_context = Object.create(null);
+
+  const localContext = Object.create(null);
 
   const multi_step_progress = new MultiStepProgress()
     .addStep('Account Info')
     .addStep('Profile Info')
     .addStep('Submit');
 
+  // Show multi step progress bar
+  multi_step_section.append(multi_step_progress);
+
   const success_modal = new SuccessModal()
     .useDarkOverlay()
     .setButtonText('Sign In')
     .setParent(document.body);
 
-  let current = fieldsets[0];
+  /**
+   |--------------------------------------------------------------------
+   | Forms initialization
+   |-------------------------------------------------------------------- 
+   */
 
-  fieldsets.forEach(function prepareFieldset(fieldset) {
-    const fields = fieldset.querySelectorAll('.form-field');
+  const account_info_fieldset = new ChainableFieldSet('Account Info').setParent(register_form);
+  const profile_info_fieldset = new ChainableFieldSet('Profile Info').setParent(register_form);
+  const verify_email_fieldset = new ChainableFieldSet('Verify Email Address').setParent(register_form);
 
-    fieldset.$colorStripe = fieldset.querySelector('.color-stripe');
-    fieldset.$title = fieldset.querySelector('.form__title');
-    fieldset.$title.$legend = fieldset.querySelector('legend');
-    fieldset.$body = fieldset.querySelector('.form__body');
+  const fieldsets = [account_info_fieldset, profile_info_fieldset, verify_email_fieldset];
 
-    for (const field of fields) {
-      field.$input = field.querySelector('input') || document.createElement('input');
-      field.$icon = field.querySelector('i') || document.createElement('i');
-      field.$placeholder = field.querySelector('label') || document.createElement('label');
-      field.$description = field.querySelector('small') || document.createElement('small');
+  account_info_fieldset.chainWith(
+    profile_info_fieldset, 
+    verify_email_fieldset
+  );
 
-      const snakeCaseFieldName = field.$input.getAttribute('name').split('-').join('_');
-      fieldset.$body['$' + snakeCaseFieldName] = field;
+  const username_input = new FormFieldInput(
+      'text', 'username', 'fa-user-circle', 
+      'Username', 
+      'Only letters, numbers, - and _ can be used.')
+    .maxlength(50);
+  const password_input = new FormFieldInput(
+      'password', 'password', 'fa-fingerprint',
+      'Password',
+      'A strong password must contain uppercase, lowercase, number, special character and at least 8 characters.')
+    .maxlength(50);
+  const repeat_password_input = new FormFieldInput(
+      'password', 'repeat-password', 'fa-fingerprint',
+      'Repeat Password',
+      'Must match the password above.')
+    .maxlength(50);
 
-      const valid_icon = document.createElement('i').setClass('fa fa-check');
-      const warning_icon = document.createElement('i').setClass('fa fa-exclamation');
-      const invalid_icon = document.createElement('i').setClass('fa fa-times')
+  account_info_fieldset.attach(username_input, password_input, repeat_password_input);
 
-      const childSitter = document.createElement('small');
+  const firstname_input = new FormFieldInput(
+      'text', 'firstname', 'fa-tag',
+      'First Name',
+      'Must be a meaningful name.')
+    .maxlength(30);
+  const lastname_input = new FormFieldInput(
+      'text', 'lastname', 'fa-tag',
+      'Last Name',
+      'Must be a meaningful name.')
+    .maxlength(30);
+  const email_address_input = new FormFieldInput(
+      'email', 'email-address', 'fa-at',
+      'Email Address',
+      'Not used for marketing.')
+    .maxlength(50);
+  const phone_number_input = new FormFieldInput(
+      'tel', 'phone-number', 'fa-mobile-alt',
+      'Phone Number',
+      'Not used for marketing.')
+    .maxlength(15);
 
-      field.$input.alert = function alert(text = '') {
-        field.$description.innerHTML = '';
-        field.$description.append(invalid_icon);
-        field.$description.append(text);
-        field.$description.setClass('invalid');
-      }
+  profile_info_fieldset.attach(firstname_input, lastname_input, email_address_input, phone_number_input);
 
-      field.$input.risky = function risky(text = '') {
-        field.$input.alert(text);
-      }
+  const verification_code_input = new FormFieldInput(
+      'text', 'verification-code', 'fa-key',
+      'Verification Code',
+      '6-digit code, sent via email. <a id="resend-verification-code" href="#">Missing code?</a>')
+    .maxlength(6);
+  const terms_policy_checkbox = new FormFieldCheckbox(
+      'terms-policy', 'terms', 'fa-check',
+      'I accept the <a href="/terms">Terms of Service</a> and the <a href="/privacy">Privacy Policy</a>'
+    );
+  const google_recaptcha = new GoogleCaptcha('google-recaptcha', '6LdV-iEeAAAAADMsIg3xd2OIUt2LoWqTmDrSYaiu');
 
-      field.$input.warning = function warning(text = '') {
-        field.$description.innerHTML = '';
-        field.$description.append(warning_icon);
-        field.$description.append(text);
-        field.$description.setClass('warning');
-      }
+  verify_email_fieldset
+    .attach(verification_code_input)
+    .attachExclusion(terms_policy_checkbox, google_recaptcha);
 
-      field.$input.pass = function pass(text = '') {
-        field.$description.innerHTML = '';
-        field.$description.append(valid_icon);
-        field.$description.append(text);
-        field.$description.setClass('valid');
-      }
+  /**
+   |--------------------------------------------------------------------
+   | Local settings & local variables
+   |-------------------------------------------------------------------- 
+   */
 
-      field.$input.recover = function recover() {
-        field.$description.copyChildNodesOf(childSitter);
-        field.$description.classList.value = '';
-      }
+  let current = account_info_fieldset;
 
-      field.$input.pending = function pending() {
-        field.$input.recover();
-
-        if (!field.$description.classList.contains('pending')) {
-          field.$description.setClass('pending');
-        }
-      }
-
-
-      field.addEventListener('input', function onUserTyping(event) {
-        if (field.$input.value !== serverSideValidateFormData[snakeCaseFieldName]) {
-          serverSideValidateFormData[snakeCaseFieldName] = field.$input.value;
-        }
-
-        if (!childSitter.childNodes.length) {
-          childSitter.copyChildNodesOf(field.$description);
-        }
-        
-        clearTimeout(field._timer);
-        field.$input.pending();
-        
-        /**
-         * After 0.8 seconds, remove validate pending state and run 
-         * the callback.
-         */
-        field._timer = setTimeout(function validateWhenUserStopTyping() {
-          const onInputCallback = getEventListenerCallback('onInput', snakeCaseFieldName);
-          onInputCallback(field.$input);
-          field.$description.classList.remove('pending');
-        }, 800);
-
-        /**
-         * After 0.3 seconds, if every field of current fieldset are not 
-         * filled out, disable the submit button.
-         */
-        field._pending = setTimeout(function handleButtonClickableState() {
-          if (isAllFieldFilledOut(fields)) {
-            fieldset.$bottom.$next.enableButton();
-          }
-          else {
-            fieldset.$bottom.$next.disableButton();
-          }
-        }, 300);
-      });
-
-
-      field.addEventListener('focusout', function onFocusOut(event) {
-        if (!childSitter.childNodes.length) {
-          childSitter.copyChildNodesOf(field.$description);
-        }
-
-        // Remove pending state immediately on focusout.
-        clearTimeout(field._timer);
-        field.$description.classList.remove('pending');
-
-        if (!field.$input.value) {
-          field.$input.recover();
-        }
-        else {
-          const onFocusOutCallback = getEventListenerCallback('onFocusOut', snakeCaseFieldName);
-          onFocusOutCallback(field.$input);
-        }
-      });
-    }
-
-    fieldset.$bottom = document.createElement('div').setClass('form__bottom row').setParent(fieldset);
-
-    fieldset.$bottom.$prev = new StyledButton('prev-button', 'fa-arrow-left', 'Prev')
-    fieldset.$bottom.$next = new StyledButton('next-button', 'fa-arrow-right', 'Next')
-
-    fieldset.$bottom.$prev.style.setProperty('display', 'none');
-    fieldset.$bottom.$next.style.setProperty('display', 'none');
-
-    fieldset.$bottom.$prev.addEventListener('click', function() { fieldset.prev() });
-    fieldset.$bottom.$next.addEventListener('click', function() { 
-      const nextButtonCanClick = !fieldset.$bottom.$next.isDisabled();
-      nextButtonCanClick && fieldset.$bottom.$next.click()
-    });
-
-    fieldset.$bottom.$next.disableButton();
-
-    fieldset.$chain = Object.create(null);
-    fieldset.$animation = Object.create(null);
-
-    fieldset.update = function update() {
-      if (this.$chain.$prev && !this.$bottom.$prev.parent) {
-        this.$bottom.prepend(this.$bottom.$prev)
-      }
-      if (this.$chain.$next && !this.$bottom.$next.parent) {
-        this.$bottom.append(this.$bottom.$next)
-      }
-    }
-
-    fieldset.chain = function chainFieldSet(nextfs) {
-      this.$chain.$next = nextfs;
-      nextfs.$chain.$prev = this;
-
-      this.update();
-      nextfs.update();
-
-      this.$bottom.$next.style.setProperty('display', 'block');
-      nextfs.$bottom.$prev.style.setProperty('display', 'block');
-      return this.$chain.$next;
-    }
-
-    fieldset.next = function nextFieldset() {
-      if (this.$chain.$next && this.style.display !== 'none') {
-        this.$animation.disappear();
-        this.$chain.$next.$animation.next();
-
-        multi_step_progress.nextStep();
-        current = this.$chain.$next;
-      }
-    }
-
-    fieldset.prev = function prevFieldset() {
-      if (this.$chain.$prev && this.style.display !== 'none') {
-        this.$animation.disappear();
-        this.$chain.$prev.$animation.prev();
-
-        multi_step_progress.prevStep();
-        local_context.disableSubmit();
-        current = this.$chain.$prev;
-      }
-    }
-
-    fieldset.$animation.disappear = function triggerAnimationDisappear() {
-      this.style.setProperty('visibility', 'hidden')
-      this.style.setProperty('animation', 'disappear 1.25s linear');
-      this.style.setProperty('display', 'none');  
-    }
-    .bind(fieldset)
-
-    fieldset.$animation.next = function triggerAnimationSwipeLeft() {
-      this.style.setProperty('visibility', 'visible')
-      this.style.setProperty('animation', 'fadeInLeft 1.5s cubic-bezier(0.19, 1, 0.22, 1)');
-      this.style.setProperty('display', 'block')
-    }
-    .bind(fieldset)
-
-    fieldset.$animation.prev = function triggerAnimationSwipeRight() {
-      this.style.setProperty('visibility', 'visible')
-      this.style.setProperty('animation', 'fadeInRight 1.5s cubic-bezier(0.19, 1, 0.22, 1)');
-      this.style.setProperty('display', 'block')
-    }
-    .bind(fieldset)
-
-    fieldset.$bottom.$next.click = function nextButtonClick() {
-      requestServerSideValidate(fieldset)
-      .then(response => {
-        const isBothClientServerValidated = !response.errors.length && isAllFieldValidated(fields);
-        const isPenultimateFieldset = fieldset == fieldsets[fieldsets.length - 2];
-        
-        if (isPenultimateFieldset) requestServerSendVerificationCode(fieldset);
-        if (isBothClientServerValidated) return fieldset.next();
-
-        response.errors.forEach(function showErrorsResponse(error) {
-          const componentName = '$' + error.param;
-          const isVisibleField = fieldset.$body[componentName];
-          isVisibleField && fieldset.$body[componentName].$input.alert(error.msg);
-        })
-      })
-    }
-  });
-
-  // Go to the next form part if the user pressing enter key
-  document.addEventListener('keyup', function activeNextFormOnEnterKeyPressed(event) {
-    const isEnterKeyPressed = event.keyCode == 13;
-
-    if (isEnterKeyPressed) {
-      const nextButtonCanClick = current.$bottom && !current.$bottom.$next.isDisabled();
-
-      if (isEnterKeyPressed && nextButtonCanClick) {
-        current.$bottom.$next.click();
-      }
-    }
-  });
-
-  // Show multi step progress bar
-  multi_step_section.append(multi_step_progress); 
-
-  // Chaining the fieldsets together, you can go to the next fieldset only when 
-  // previous fieldset passes the validation
-  const last_fieldset = fieldsets[0].chain(fieldsets[1]).chain(fieldsets[2]);
-  const fields = last_fieldset.querySelectorAll('.form-field');
-  
   // Submit button still has the same behavior as a form's next button, but:
   // - It points to null, like the last node of the Linked List. 
   //   Therefore, it will not run the form's generic next callback
   // - It is default attached to the last fieldset. This helps to maintain the 
-  //   code in future, when add more field is needed, just edit a single line.
-  const submit_button = new StyledButton('submit-button', 'fa-check', 'Submit');
-  last_fieldset.$bottom.append(submit_button);
-  last_fieldset.$bottom.$next = submit_button;
-  submit_button.disableButton();
+  //   code in future more easier.
+  const lastFieldSet = fieldsets[fieldsets.length - 1];
+  const lastFieldSetNextButton = lastFieldSet.$bottom.$next_button;
+  const submitButton = new StyledButton('submit-button', 'fa-check', 'Submit');
+  lastFieldSet.replaceButton(lastFieldSetNextButton, submitButton);
+  submitButton.disableButton();
 
-  // Only enableButton() when GCaptcha is verified.
-  local_context.disableSubmit = function resetCaptchaAndDisableSubmitButton() {
-    submit_button.disableButton();
-    return grecaptcha.reset();
-  }
+  // Enable/Disable the Submit button depends on Google Captcha verification status
+  google_recaptcha.onExpiredCallback(() => submitButton.disableButton());
+  google_recaptcha.onErrorCallback(() => submitButton.disableButton());
+  google_recaptcha.onSuccessCallback(() => isThisFormFilledAll(lastFieldSet.attachedFields) && submitButton.enableButton());
 
-  // Disable the submit button on captcha expired
-  globalContext.disableSubmit = function disableSubmitOnCaptchaExpired() {
-    submit_button.disableButton();
-  }
+  submitButton.addEventListener('click', function submitForm(event) {
+    serverRequestAsync.requestToSubmitRegisterForm()
+    .then(function responseAfterAll(response) {
+      const inputElement = lastFieldSet.$body.$verification_code.$input;
 
-  // Install Google reCaptcha
-  window.addEventListener('load', function setCaptchaOnRenderOptions() {
-    if (!grecaptcha) return;
-
-    grecaptcha.render(document.querySelector('.google-recaptcha'), {
-      sitekey: '6LdV-iEeAAAAADMsIg3xd2OIUt2LoWqTmDrSYaiu',
-      theme: 'light',
-      'expired-callback': globalContext.disableSubmit,
-      'error-callback': globalContext.disableSubmit,
-      callback() {
-        return isAllFieldFilledOut(fields) && submit_button.enableButton();
-      }
-    })
-  });
-
-  // Apply a custom event for resend code link (of the last fieldset)
-  const resendVerificationCodeAnchor = document.getElementById('resend-verification-code');
-  resendVerificationCodeAnchor.addEventListener('click', requestResendVerificationCode);
-
-  // Submit the entire form to server, including verification_code for
-  // checking. If successful, accept the registration then save it into
-  // the database.
-  submit_button.addEventListener('click', function submitForm(event) {
-    submitRegister()
-      .then(response => {
-      const hasError = response.error;
-      const input = last_fieldset.$body.$verification_code.$input;
-
-      if (hasError) {
-        input.alert(response.error.message);
+      if (response.error) {
+        inputElement.alert(response.error.message);
         return;
       }
 
-      const isSuccessful = response.success;
-
-      if (isSuccessful) {
-        input.pass();
+      if (response.success) {
+        inputElement.pass();
         success_modal.showModal();
       }
     })
-  });
-  
+  })
+
   success_modal.onModalDismiss(function closeModalAndReloadPage() {
     success_modal.hideModal();
     location.href = '/register';
@@ -652,5 +428,175 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
   success_modal.onButtonClick(function closeModalAndRedirectToLogin() {
     success_modal.hideModal();
     location.href = '/login';
-  })
+  });
+
+  // Enter keymapping for the Next button
+  document.addEventListener('keyup', function pressEnterKeyToSwitchNext(event) {
+    const isEnterKeyPressed = event.keyCode == 13;
+
+    if (isEnterKeyPressed) {
+      const nextButton = current?.$bottom?.$next_button;
+      nextButton?.clickButton();
+    }
+  });
+
+  // Resend verification code of the last fieldset
+  const resendVerificationCodeLink = document.getElementById('resend-verification-code');
+  const countdownIcon = document.createElement('i').setClass('fa fa-envelope');
+  const countdownMessage = document.createTextNode('Resend code in ');
+  const countdownElement = document.createElement('b');
+
+  resendVerificationCodeLink.addEventListener('click', function requestResendVerificationCode() {
+    const descriptionLabelElement = this.parentElement;
+    const formFieldWrapperElement = descriptionLabelElement.parentElement;
+    const localChildSitter = document.createElement('small');
+
+    let   countdownValue = 60;
+    countdownElement.innerText = utils.convertSecondToMinute(countdownValue);
+    localChildSitter.copyChildNodesOf(descriptionLabelElement);
+
+    descriptionLabelElement.removeAllChild();
+    descriptionLabelElement.append(countdownIcon, countdownMessage, countdownElement);
+
+    serverRequestAsync.requestToResendVerificationCode();
+
+    // Fake state, to stop users restore the resend link when counting down
+    const inputElement = formFieldWrapperElement.$input;
+    const pendingStateOriginal = inputElement.pending;
+    formFieldWrapperElement.$input.pending = (() => {});
+
+    const countdownInterval = setInterval(function unresendableCountdown() {
+      countdownElement.innerText = utils.convertSecondToMinute(--countdownValue);
+
+      if (countdownValue <= 0) {
+        descriptionLabelElement.copyChildNodesOf(localChildSitter);
+        formFieldWrapperElement.$input.pending = pendingStateOriginal;
+        clearTimeout(countdownInterval);
+      }
+    }, 1000);
+  });
+
+  /**
+   |--------------------------------------------------------------------
+   | Form component event listeners
+   |-------------------------------------------------------------------- 
+   */
+
+  for (const fieldset of fieldsets) {
+
+    const fieldsetBody = fieldset.$body;
+    const previousButton = fieldset.$bottom.$prev_button;
+    const nextButton = fieldset.$bottom.$next_button;
+
+    const onNextFormSwitchingCallback = function onNextFormSwitchingCallback(formAction) {
+      serverRequestAsync.requestToValidateFormFields(fieldset)
+      .then(response => {
+        // If the server doesn't return an error
+        const isServerValidated = !response?.errors?.length;
+        const isClientValidated = isThisFormValidatedAll(fieldset);
+        const isBothClientServerValidated = isServerValidated && isClientValidated;
+
+        const isPenultimateFieldset = fieldsets.indexOf(fieldset) == (fieldsets.length - 2);
+        if (isPenultimateFieldset) serverRequestAsync.requestToGetVerificationCodeByEmail();
+        if (isBothClientServerValidated) {
+          current = fieldset.chainContext.next;
+          multi_step_progress.nextStep();
+          return formAction.nextFormSwitch();
+        }
+
+        // Otherwise
+        response.errors.forEach(function showErrorResponse(errors) {
+          const componentName = '$' + errors.param;
+          const componentBelongToThisFieldset = fieldsetBody[componentName];
+
+          if (componentBelongToThisFieldset) {
+            const inputElement = fieldsetBody[componentName].$input;
+            inputElement.alert(errors.msg);
+          }
+        })
+      })
+    };
+
+    const onPreviousFormSwitchingCallback = function onPreviousFormSwitchingCallback(formAction) {
+      const isLastFieldset = fieldsets.indexOf(fieldset) == (fieldsets.length - 1);
+
+      if (isLastFieldset) {
+        submitButton.disableButton();
+        grecaptcha && grecaptcha.reset();
+      }
+
+      current = fieldset.chainContext.prev;
+      formAction.prevFormSwitch();
+      multi_step_progress.prevStep();
+    }
+
+    nextButton.disableButton();
+    fieldset.onNextButtonClick(onNextFormSwitchingCallback);
+    fieldset.onPrevButtonClick(onPreviousFormSwitchingCallback);
+
+    for (const field of fieldset.attachedFields) {
+
+      const inputElement = field.$input;
+      const descriptionElement = field.$description;
+
+      if (!inputElement) continue;
+
+      const childSitter = document.createElement('small');
+      const snakeCaseFieldName = inputElement.getAttribute('name').replace(/\-/g, '_');
+
+      field.childSitter = childSitter;
+
+      field.addEventListener('input', function onUserTyping(event) {
+        if (inputElement.value !== synchronizedFormData[snakeCaseFieldName]) {
+          synchronizedFormData[snakeCaseFieldName] = inputElement.value;
+        }
+
+        if (!childSitter.childNodes.length) {
+          childSitter.copyChildNodesOf(descriptionElement);
+        }
+
+        clearTimeout(field.pendingStateDurationTimeout);
+        inputElement.pending();
+
+        /**
+         * After 0.8 seconds, remove pending state and run the validation
+         * callback
+         */
+        field.pendingStateDurationTimeout = setTimeout(function validateWhenUserStoppedTyping() {
+          const onInputCallback = getEventListenerCallback('onInput', snakeCaseFieldName);
+          onInputCallback.call(null, inputElement);
+          descriptionElement.classList.remove('pending');
+        }, 500);
+
+        /**
+         * After 0.3 seconds, if every field of current fieldset are not 
+         * filled out, disable the submit button.
+         */
+        field.disableButtonTimeout = setTimeout(function handleButtonClickableState() {
+          if (isThisFormFilledAll(fieldset))
+            nextButton.enableButton();
+          else
+            nextButton.disableButton();
+        }, 300);
+      });
+
+      field.addEventListener('focusout', function recoverStateOnFocusOut() {
+        if (!childSitter.childNodes.length) {
+          childSitter.copyChildNodesOf(descriptionElement);
+        }
+
+        // Remove pending state immediately on focusout.
+        clearTimeout(field.pendingStateDurationTimeout);
+        descriptionElement.classList.remove('pending');
+
+        if (!inputElement.value) {
+          inputElement.recover();
+          return;
+        }
+
+        const onFocusOutCallback = getEventListenerCallback('onFocusOut', snakeCaseFieldName);
+        onFocusOutCallback.call(null, inputElement);
+      })
+    }
+  }
 });
