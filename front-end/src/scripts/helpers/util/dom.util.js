@@ -17,6 +17,8 @@ module.exports.parse = function parseTemplate(template, options = {}) {
   const ancestor = wrapper.firstElementChild;
   const descendant = Object.create(null);
 
+  ancestor.context = context;
+
   wrapper.innerHTML = '';
 
   for (const member of membersList) {
