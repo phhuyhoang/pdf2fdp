@@ -89,6 +89,24 @@ module.exports.init = function () {
     return clones;
   }
 
+  HTMLElement.prototype.removeAllChild = function removeAllChild() {
+    try {
+      try {
+        while (this.firstChild)
+          this.removeChild(this.firstChild)
+        return true;
+      }
+      catch {
+        this.innerHTML = '';
+      }
+
+      return true;
+    }
+    catch {
+      return false;
+    }
+  }
+
   /**
    * @param {string} name
    * @param {number} style
