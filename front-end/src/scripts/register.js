@@ -3,7 +3,6 @@
  * promise.then instead of ES7 async-await
  */
 const autoload = require('./helpers/autoload/prototype').init();
-const DOM = require('./helpers/util/dom.util');
 
 const MultiStepProgress = require('./components/register/MultiStepProgress.component');
 const SuccessModal = require('./components/register/SuccessModal.component');
@@ -286,8 +285,6 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
 
   const multi_step_section = document.querySelector('.multi-step-section');
   const register_form = document.querySelector('.register-form');
-
-  const localContext = Object.create(null);
 
   const multi_step_progress = new MultiStepProgress()
     .addStep('Account Info')
