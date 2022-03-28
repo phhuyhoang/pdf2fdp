@@ -45,6 +45,7 @@ function ChainableFieldSet(title) {
   const customEvents = Object.create(null);
   const formAction = Object.create(null);
   const attachedFields = [];
+  const excludedElements = [];
 
   root.$colorStripe = descendant.colorStripe;
   root.$title = descendant.title;
@@ -58,13 +59,13 @@ function ChainableFieldSet(title) {
   root.chainContext = chainContext;
   root.performAnimation = performAnimation;
   root.attachedFields = attachedFields;
+  root.excludedElements = excludedElements;
 
   prevButton.style.setProperty('display', 'none');
   nextButton.style.setProperty('display', 'none');
 
   prevButton.$button.addEventListener('click', () => customEvents.prev ? customEvents.prev(formAction) : formAction.prevFormSwitch());
   nextButton.$button.addEventListener('click', () => {
-    console.log(customEvents.next ? customEvents.next : formAction.nextFormSwitch)
     customEvents.next ? customEvents.next(formAction) : formAction.nextFormSwitch()
   });
 
@@ -98,9 +99,10 @@ function ChainableFieldSet(title) {
     return root;
   }
 
-  root.attachExclusion = function attachExclusionComponents(...components) {
+  root.attachExclusion = function attachExclusion(...components) {
     for (const component of components) {
       descendant.body.appendChild(component);
+      excludedElements.push(component);
     }
     return root;
   }
@@ -138,17 +140,21 @@ function ChainableFieldSet(title) {
 
   root.replaceButton = function replaceButton(whichButton, replacerButton) {
     if (whichButton == prevButton) {
+      descendant.bottom.contains(prevButton) && descendant.bottom.removeChild(prevButton);
+
       prevButton.removeEventListener('click', root.prevFormSwitch);
       prevButton = replacerButton;
-
       root.$bottom.$prev_button = prevButton;
+
       descendant.bottom.prepend(replacerButton)
     }
     if (whichButton == nextButton) {
+      descendant.bottom.contains(nextButton) && descendant.bottom.removeChild(nextButton);
+
       nextButton.removeEventListener('click', root.nextFormSwitch);
       nextButton = replacerButton;
-
       root.$bottom.$next_button = nextButton;
+
       descendant.bottom.append(replacerButton);
     }
   }
