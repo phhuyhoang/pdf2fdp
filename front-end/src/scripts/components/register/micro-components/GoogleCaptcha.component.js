@@ -20,6 +20,8 @@ function GoogleCaptcha(name, sitekey, theme = 'light') {
 
   const root = ancestor;
 
+  root.checked = false;
+
   const listeners = {
     onSuccess: () => {},
     onExpired: () => {},
@@ -27,9 +29,20 @@ function GoogleCaptcha(name, sitekey, theme = 'light') {
   }
 
   const inTimeListener = {
-    onSuccess: callback => listeners.onExpired(callback),
-    onExpired: callback => listeners.onExpired(callback),
-    onErrors: callback => listeners.onErrors(callback),
+    onExpired: callback => {
+      root.checked = false;
+      listeners.onExpired(callback)
+    },
+
+    onErrors: callback => {
+      root.checked = false;
+      listeners.onErrors(callback)
+    },
+    
+    onSuccess: callback => {
+      root.checked = true;
+      listeners.onSuccess(callback)
+    },
   }
 
   // Install Google reCaptcha

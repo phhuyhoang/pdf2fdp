@@ -228,7 +228,7 @@ const isThisFormFilledAll = function isThisFormFilledAll(fieldset) {
       default:
         return inputElement.value?.length > 0;
     }
-  })
+  });
 }
 
 const isThisFormValidatedAll = function isThisFormValidatedAll(fieldset) {
@@ -251,7 +251,6 @@ const serverRequestAsync = {
   requestToValidateFormFields: function requestServerSideValidateForm(fieldset) {
     const normalizedFieldNames = fieldset.attachedFields.map(field => field.context.name.replace(/^\$/, '').replace(/\-/, '_'));
     const filledFieldSubset = synchronizedFormData.subset(...normalizedFieldNames);
-    console.log(fieldset, normalizedFieldNames, filledFieldSubset, synchronizedFormData);
 
     return useFetchAPI('register/validate', 'POST', JSON.stringify(filledFieldSubset));
   },
@@ -391,10 +390,27 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
   lastFieldSet.replaceButton(lastFieldSetNextButton, submitButton);
   submitButton.disableButton();
 
+  const termPolicyCheckbox = terms_policy_checkbox.$input;
+  termPolicyCheckbox.addEventListener('change', () => 
+    termPolicyCheckbox.checked
+    ? submitButton.enableButton() 
+    : submitButton.disableButton());
+
   // Enable/Disable the Submit button depends on Google Captcha verification status
   google_recaptcha.onExpiredCallback(() => submitButton.disableButton());
   google_recaptcha.onErrorCallback(() => submitButton.disableButton());
-  google_recaptcha.onSuccessCallback(() => isThisFormFilledAll(lastFieldSet.attachedFields) && submitButton.enableButton());
+  google_recaptcha.onSuccessCallback(() => submitButton.enableButton());
+
+  // Wrapper function for submitButton, prevent it from being enabled unless
+  // termPolicyCheckbox and googleCaptcha are checked
+  const enableSubmitButton = submitButton.enableButton;
+  submitButton.enableButton = function enableButtonWithAdditionalCondition() {
+    const enteredVerificationCode = isThisFormFilledAll(lastFieldSet);
+    const agreedTermsAndPolicies = terms_policy_checkbox.$input.checked;
+    const verifiedGoogleCaptcha = google_recaptcha.checked;
+
+    if (enteredVerificationCode && agreedTermsAndPolicies && verifiedGoogleCaptcha) enableSubmitButton();
+  }
 
   submitButton.addEventListener('click', function submitForm(event) {
     serverRequestAsync.requestToSubmitRegisterForm()
